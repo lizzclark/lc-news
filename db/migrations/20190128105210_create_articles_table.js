@@ -12,7 +12,7 @@ exports.up = function(connection, Promise) {
       .string('username')
       .references('users.username')
       .notNullable();
-    articlesTable.timestamps('created_at', true);
+    articlesTable.timestamp('created_at', true);
   });
 };
 
