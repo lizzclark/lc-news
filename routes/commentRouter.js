@@ -1,8 +1,20 @@
 const commentRouter = require('express').Router();
-const { getComments } = require('../controllers/comments');
+const { getComments, addComment } = require('../controllers/comments');
+const {
+  getArticleById,
+  addVote,
+  deleteArticle,
+} = require('../controllers/articles');
 
-commentRouter.route('/').get(() => {
-  console.log('got inside this function');
-});
+commentRouter
+  .route('/')
+  .get(getArticleById)
+  .patch(addVote)
+  .delete(deleteArticle);
+
+commentRouter
+  .route('/comments')
+  .get(getComments)
+  .post(addComment);
 
 module.exports = commentRouter;
