@@ -1,7 +1,6 @@
 const { fetchTopics } = require('../models/topics');
 
 const getTopics = function(req, res, next) {
-  console.log('getting all topics...');
   fetchTopics().then(topics => res.status(200).send({ topics }));
 };
 

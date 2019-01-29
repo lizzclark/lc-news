@@ -29,7 +29,6 @@ describe('NC news', () => {
         .get('/api/topics')
         .expect(200)
         .then(({ body: { topics } }) => {
-          console.log(topics);
           expect(topics[0]).contains.keys('slug', 'description');
         });
     });
