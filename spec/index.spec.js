@@ -48,6 +48,33 @@ describe('NC news', () => {
         .expect(400);
     });
   });
+  describe.only('/api/topics/:topic/articles', () => {
+    it('GET /api/topics/:topic/articles 200 responds with articles for that topic', () => {
+      return request
+        .get('/api/topics/cats/articles')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles[0]).contains.keys(
+            'title',
+            'votes',
+            'username',
+            'created_at'
+          );
+        });
+    });
+    it('GET /api/topics/:topic/articles 404 not found - client tried to get articles for nonexistent topic', () => {
+      return request.get('/api/topics/dogs/articles').expect(404);
+    });
+    it('GET /api/topics/:topic/articles 200 responds with a total_count property giving the total number of articles', () => {
+      return request
+        .get('/api/topics/cats/articles')
+        .expect(200)
+        .then(res => {
+          // console.log(res.body.articles);
+          expect(+res.body.total_count).to.equal(1);
+        });
+    });
+  });
 });
 
 // it('GET / 404 client requests non-existent article ID') - so like "/articles/1000000"

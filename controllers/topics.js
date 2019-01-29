@@ -1,4 +1,8 @@
-const { fetchTopics, addTopic } = require('../models/topics');
+const {
+  fetchTopics,
+  addTopic,
+  fetchArticlesByTopic,
+} = require('../models/topics');
 
 const getTopics = function(req, res, next) {
   fetchTopics().then(topics => res.status(200).send({ topics }));
@@ -20,7 +24,16 @@ const postTopic = function(req, res, next) {
 };
 
 const getArticlesByTopic = function(req, res, next) {
-  console.log('getting articles by topic...');
+  const topicSlug = req.params.topic;
+  fetchArticlesByTopic(topicSlug).then(articles => {
+    console.log(articles);
+    if (articles.length === 0) {
+      next({ status: 404, message: 'articles not found' });
+    } else {
+      const total_count = articles[0].total_count;
+      res.status(200).send({ total_count, articles });
+    }
+  });
 };
 
 const postArticleInTopic = function(req, res, next) {
