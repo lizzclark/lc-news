@@ -4,14 +4,14 @@
   "description": "## Northcoders News API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "psql -f db/setup_test.sql && mocha spec",
     "lint": "eslint ./",
     "pre-commit": "npm t",
     "posttest": "npm run lint",
     "make-migration": "knex migrate:make",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
-    "setup-dbs": "psql -f db/setup.sql",
+    "setup-dbs": "psql -f db/setup.sql && psql -f db/setup_test.sql",
     "seed": "knex seed:run",
     "dev": "nodemon listen.js"
   },
