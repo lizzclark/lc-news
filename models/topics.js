@@ -11,12 +11,11 @@ exports.addTopic = newTopic => {
     .returning('*');
 };
 
-exports.fetchArticlesByTopic = topic => {
+exports.fetchArticlesByTopic = (topic, limit = 10, sort_by = 'created_at') => {
   return Promise.all([
     connection
       .select(
         { author: 'articles.username' },
-        'articles.body',
         'articles.votes',
         'topic',
         'title',
@@ -26,8 +25,15 @@ exports.fetchArticlesByTopic = topic => {
       .count('comment_id as comment_count')
       .from('articles')
       .join('comments', 'articles.article_id', 'comments.article_id')
-      .where({ topic })
-      .groupBy('articles.article_id'),
+      .where(queryBuilder => {
+        queryBuilder.where({ topic });
+        // if () {
+        //   queryBuilder.where({  });
+        // }
+      })
+      .groupBy('articles.article_id')
+      .limit(limit)
+      .orderBy(sort_by),
     connection
       .count('article_id as total_count')
       .from('articles')

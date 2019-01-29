@@ -61,8 +61,7 @@ describe('NC news', () => {
             'created_at',
             'article_id',
             'comment_count',
-            'topic',
-            'body'
+            'topic'
           );
         });
     });
@@ -83,6 +82,40 @@ describe('NC news', () => {
         .expect(200)
         .then(({ body: { articles } }) => {
           expect(articles[0].comment_count).to.equal('13');
+        });
+    });
+    it('GET /api/topics/:topic/articles 200 limits to 10 results DEFAULT CASE', () => {
+      return request
+        .get('/api/topics/mitch/articles')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).to.be.below(11);
+        });
+    });
+    it('GET /api/topics/:topic/articles 200 can be queried with a limit', () => {
+      return request
+        .get('/api/topics/mitch/articles?limit=2')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).to.equal(2);
+        });
+    });
+    it('GET /api/topics/:topic/articles 200 sorts by date desc DEFAULT CASE', () => {
+      return request
+        .get('/api/topics/mitch/articles')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          const articleDate = articles[0].created_at;
+          const article2Date = articles[1].created_at;
+          expect(articleDate > article2Date).to.be.true;
+        });
+    });
+    it('GET /api/topics/:topic/articles 200 can be queried ?sort_by to sort by any column', () => {
+      return request
+        .get('/api/topics/mitch/articles?sort_by=title')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles[0].title[0]).to.equal('A');
         });
     });
   });
