@@ -25,12 +25,11 @@ const postTopic = function(req, res, next) {
 
 const getArticlesByTopic = function(req, res, next) {
   const topicSlug = req.params.topic;
-  fetchArticlesByTopic(topicSlug).then(articles => {
-    console.log(articles);
+  fetchArticlesByTopic(topicSlug).then(([articles, countData]) => {
     if (articles.length === 0) {
       next({ status: 404, message: 'articles not found' });
     } else {
-      const total_count = articles[0].total_count;
+      const { total_count } = countData[0];
       res.status(200).send({ total_count, articles });
     }
   });

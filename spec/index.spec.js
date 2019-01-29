@@ -54,11 +54,15 @@ describe('NC news', () => {
         .get('/api/topics/cats/articles')
         .expect(200)
         .then(({ body: { articles } }) => {
-          expect(articles[0]).contains.keys(
+          expect(articles[0]).to.have.all.keys(
             'title',
             'votes',
-            'username',
-            'created_at'
+            'author',
+            'created_at',
+            'article_id',
+            'comment_count',
+            'topic',
+            'body'
           );
         });
     });
@@ -69,9 +73,16 @@ describe('NC news', () => {
       return request
         .get('/api/topics/cats/articles')
         .expect(200)
-        .then(res => {
-          // console.log(res.body.articles);
-          expect(+res.body.total_count).to.equal(1);
+        .then(({ body: { total_count } }) => {
+          expect(total_count).to.equal('1');
+        });
+    });
+    it('GET /api/topics/:topic/articles 200 responds with articles - each has a comment_count property', () => {
+      return request
+        .get('/api/topics/mitch/articles')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles[0].comment_count).to.equal('13');
         });
     });
   });
