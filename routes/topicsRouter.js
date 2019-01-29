@@ -1,7 +1,7 @@
 const topicRouter = require('express').Router();
 const {
   getTopics,
-  addTopic,
+  postTopic,
   getArticlesByTopic,
   postArticleInTopic,
 } = require('../controllers/topics');
@@ -9,7 +9,7 @@ const {
 topicRouter
   .route('/')
   .get(getTopics)
-  .post(addTopic);
+  .post(postTopic);
 
 topicRouter
   .route('/:topic/articles')

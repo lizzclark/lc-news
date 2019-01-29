@@ -24,13 +24,28 @@ describe('NC news', () => {
   });
 
   describe('/api/topics', () => {
-    it('GET /topics 200 & responds with...', () => {
+    it('GET /topics 200 & responds with an array of topics', () => {
       return request
         .get('/api/topics')
         .expect(200)
         .then(({ body: { topics } }) => {
           expect(topics[0]).contains.keys('slug', 'description');
         });
+    });
+    it('POST /topics 201 & responds with the topic you added', () => {
+      return request
+        .post('/api/topics')
+        .send({ slug: 'frogs', description: 'our green friends' })
+        .expect(201)
+        .then(({ body: { topic } }) => {
+          expect(topic[0]).contains.keys('slug', 'description');
+        });
+    });
+    it('POST /topics 400 Bad Request - client tried to add invalid topic data', () => {
+      return request
+        .post('/api/topics')
+        .send({ slug: 'slugs', frogs: 'are great' })
+        .expect(400);
     });
   });
 });
