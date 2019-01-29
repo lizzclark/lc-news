@@ -1,8 +1,10 @@
 process.env.NODE_ENV = 'test';
 const { expect } = require('chai');
+const supertest = require('supertest');
 const app = require('../app');
-const request = require('supertest')(app);
 const connection = require('../db/connection');
+
+const request = supertest(app);
 
 describe('NC news', () => {
   beforeEach(() => {
@@ -21,14 +23,15 @@ describe('NC news', () => {
     connection.destroy();
   });
 
-  describe('/api', () => {
-    it('GET / 200 & responds with ...', () => {
-      // expect...
-    });
-  });
   describe('/api/topics', () => {
     it('GET /topics 200 & responds with...', () => {
-      // expect...
+      return request
+        .get('/api/topics')
+        .expect(200)
+        .then(({ body: { topics } }) => {
+          console.log(topics);
+          expect(topics[0]).contains.keys('slug', 'description');
+        });
     });
   });
 });
@@ -41,4 +44,5 @@ describe('NC news', () => {
 // it('GET / 40 (Bad Request) client requests invalid article ID') - so like "/articles/piglets"
 // knex responds with an error
 
-// 400 - make an errorCodes400 object to reference when you send the 400 - because knex sends back certain codes in its errors
+// 400 - make an errorCodes400 object to reference when you send the 400 -
+// because knex sends back certain codes in its errors

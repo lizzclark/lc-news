@@ -2,10 +2,9 @@ const { topicData, userData, articleData, commentData } = require('../data');
 const { createRefObj } = require('../utils/index');
 
 exports.seed = (connection, Promise) => {
-  return connection.migrate
-    .rollback()
-    .then(() => connection.migrate.latest())
-    .then(() => connection.insert(topicData).into('topics'))
+  return connection
+    .insert(topicData)
+    .into('topics')
     .then(() => connection.insert(userData).into('users'))
     .then(() => {
       const formattedArticles = articleData.map(

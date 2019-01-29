@@ -16,5 +16,8 @@ module.exports = {
     'no-param-reassign': 0,
     'prefer-promise-reject-errors': 0,
     'arrow-parens': 0,
+    'object-curly-newline': 0,
+    'comma-dangle': 0,
+    'space-before-function-paren': 0,
   },
 };
