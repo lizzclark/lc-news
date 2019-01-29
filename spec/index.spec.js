@@ -48,7 +48,7 @@ describe('NC news', () => {
         .expect(400);
     });
   });
-  describe.only('/api/topics/:topic/articles', () => {
+  describe('GET /api/topics/:topic/articles', () => {
     it('GET /api/topics/:topic/articles 200 responds with articles for that topic', () => {
       return request
         .get('/api/topics/cats/articles')
@@ -110,13 +110,63 @@ describe('NC news', () => {
           expect(articleDate > article2Date).to.be.true;
         });
     });
-    it('GET /api/topics/:topic/articles 200 can be queried ?sort_by to sort by any column', () => {
+    it('GET /api/topics/:topic/articles 200 can be queried ?sort_by to sort by any column (DEFAULT descending)', () => {
       return request
         .get('/api/topics/mitch/articles?sort_by=title')
         .expect(200)
         .then(({ body: { articles } }) => {
-          expect(articles[0].title[0]).to.equal('A');
+          expect(articles[0].title[0]).to.equal('Z');
         });
+    });
+    it('GET /api/topics/:topic/articles 200 can be queried ?order to sort ascending', () => {
+      return request
+        .get('/api/topics/mitch/articles?order=asc')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          const articleDate = articles[0].created_at;
+          const article2Date = articles[1].created_at;
+          expect(articleDate < article2Date).to.be.true;
+        });
+    });
+    it('GET /api/topics/:topic/articles 200 can be queried ?p to make 10-item pages DEFAULT CASE', () => {
+      return request
+        .get('/api/topics/mitch/articles?p=2')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles[0].article_id).to.equal(12);
+        });
+    });
+  });
+  describe.only('POST /api/topics/:topic/articles', () => {
+    it('POST 201 responds with posted article', () => {
+      return request
+        .post('/api/topics/cats/articles')
+        .send({
+          title: 'I like CATS',
+          body: 'They are so cute and fluffy',
+          username: 'butter_bridge',
+        })
+        .expect(201)
+        .then(({ body: { article } }) => {
+          expect(article[0].title).to.equal('I like CATS');
+        });
+    });
+    it('POST 400 Bad Request - client tried to post an article in wrong format', () => {
+      return request
+        .post('/api/topics/cats/articles')
+        .send({ cats: true, dogs: false })
+        .expect(400);
+    });
+    it('POST 404 not found - client tried to post an article to nonexistent topic', () => {
+      return request
+        .post('/api/topics/doggos/articles')
+        .send({
+          title: 'Dogs',
+          body: 'They should have their own topic',
+          username: 'butter_bridge',
+        })
+        .expect(404);
+      // should I be making it do different status codes for the 2 above cases?
     });
   });
 });

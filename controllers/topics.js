@@ -2,6 +2,7 @@ const {
   fetchTopics,
   addTopic,
   fetchArticlesByTopic,
+  addArticle,
 } = require('../models/topics');
 
 const getTopics = function(req, res, next) {
@@ -25,8 +26,9 @@ const postTopic = function(req, res, next) {
 
 const getArticlesByTopic = function(req, res, next) {
   const topicSlug = req.params.topic;
-  const { limit, sort_by } = req.query;
-  fetchArticlesByTopic(topicSlug, limit, sort_by).then(
+  const { limit, sort_by, order, p } = req.query;
+  // invoke model
+  fetchArticlesByTopic(topicSlug, limit, sort_by, order, p).then(
     ([articles, countData]) => {
       if (articles.length === 0) {
         next({ status: 404, message: 'articles not found' });
@@ -39,7 +41,19 @@ const getArticlesByTopic = function(req, res, next) {
 };
 
 const postArticleInTopic = function(req, res, next) {
-  console.log('posting article in this topic...');
+  const { topic } = req.params;
+  const { title, username, body } = req.body;
+  const newArticle = { topic, title, username, body };
+  addArticle(newArticle)
+    .then(article => {
+      res.status(201).send({ article });
+    })
+    .catch(err => {
+      return next({
+        status: 400,
+        message: 'article not formatted correctly',
+      });
+    });
 };
 
 module.exports = {
