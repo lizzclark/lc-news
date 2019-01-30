@@ -1,16 +1,44 @@
+const {
+  fetchArticles,
+  fetchArticleById,
+  updateVotes,
+  strikeArticle,
+} = require('../models/articles');
+
 const getArticles = function(req, res, next) {
-  console.log('getting all articles...');
+  const { limit, sort_by, order, p } = req.query;
+  fetchArticles(limit, sort_by, order, p).then(([articles, countInfo]) => {
+    const { total_count } = countInfo[0];
+    res.status(200).send({ total_count, articles });
+  });
 };
 const getArticleById = function(req, res, next) {
-  console.log('getting this article by its ID');
+  fetchArticleById(req.params).then(([article]) => {
+    if (article) res.status(200).send({ article });
+    else next({ status: 404, message: 'no such article to get' });
+  });
 };
 
-const addVote = function(req, res, next) {
-  console.log('adding a vote to this article...');
+const patchVote = function(req, res, next) {
+  const newVote = req.body.inc_votes;
+  updateVotes(req.params, newVote).then(([article]) => {
+    if (article) res.status(200).send({ article });
+    else {
+      next({
+        status: 404,
+        message: "can't vote on a nonexistent article!",
+      });
+    }
+  });
 };
 
 const deleteArticle = function(req, res, next) {
-  console.log('deleting this article...');
+  strikeArticle(req.params.article_id).then(numRowsDeleted => {
+    console.log(numRowsDeleted);
+    if (numRowsDeleted === 1) {
+      res.status(204).send({ status: 204, message: 'no content' });
+    }
+  });
 };
 
-module.exports = { getArticles, getArticleById, addVote, deleteArticle };
+module.exports = { getArticles, getArticleById, patchVote, deleteArticle };
