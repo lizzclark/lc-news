@@ -446,6 +446,23 @@ describe('NC news', () => {
           .send({ pugs: 'butter_bridge', pigs: 'pugs are good' })
           .expect(400);
       });
+      it('POST 404 - client tried to comment on nonexistent article', () => {
+        return request
+          .post('/api/articles/333/comments')
+          .send({ body: 'butter_bridge', username: 'pugs are good' })
+          .expect(404);
+      });
+    });
+    describe('PATCH /:comment_id', () => {
+      it('PATCH 200 updates votes and responds with the updated comment', () => {
+        return request
+          .patch('/api/articles/1/comments/7')
+          .send({ inc_votes: 14 })
+          .expect(200)
+          .then(res => {
+            expect(res.body.comment.votes).to.equal(14);
+          });
+      });
     });
   });
 });
@@ -454,6 +471,8 @@ describe('NC news', () => {
 // limit = 90000 set a max of 10 OR just bring back all articles
 // limit wrong data type - 200 ignore
 // nonexistent query - knex will ignore this anyway
+
+// also todo: validate all the different queries for each query-able endpoint
 
 // it('GET / 404 client requests non-existent article ID') - so like "/articles/1000000"
 // knex responds with empty array

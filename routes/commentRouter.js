@@ -2,6 +2,8 @@ const commentRouter = require('express').Router({ mergeParams: true });
 const {
   getCommentsByArticle,
   postComment,
+  patchComment,
+  deleteComment,
 } = require('../controllers/comments');
 
 commentRouter
@@ -9,9 +11,9 @@ commentRouter
   .get(getCommentsByArticle)
   .post(postComment);
 
-// commentRouter
-//   .route('/:article_id/comments/:comment_id')
-//   .patch()
-//   .delete();
+commentRouter
+  .route('/:comment_id')
+  .patch(patchComment)
+  .delete(deleteComment);
 
 module.exports = commentRouter;

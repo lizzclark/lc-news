@@ -1,4 +1,8 @@
-const { fetchComments, addComment } = require('../models/comments');
+const {
+  fetchComments,
+  addComment,
+  voteOnComment,
+} = require('../models/comments');
 
 const getCommentsByArticle = function(req, res, next) {
   const { article_id } = req.params;
@@ -19,8 +23,33 @@ const postComment = function(req, res, next) {
       return res.status(201).send({ comment });
     })
     .catch(err => {
-      next({ status: 400, message: 'cant post this comment' });
+      let errorObject;
+      if (err.code === '23503') {
+        errorObject = {
+          status: 404,
+          message: "can't add comment to nonexistent article",
+        };
+      } else if (err.code === '42703') {
+        errorObject = { status: 400, message: 'invalid comment data' };
+      }
+      next(errorObject);
     });
 };
 
-module.exports = { getCommentsByArticle, postComment };
+const patchComment = function({ params: { comment_id }, body }, res, next) {
+  const newVote = body.inc_votes;
+  voteOnComment(comment_id, newVote).then(([comment]) => {
+    res.status(200).send({ comment });
+  });
+};
+
+const deleteComment = function(req, res, next) {
+  console.log('deleting comment...');
+};
+
+module.exports = {
+  getCommentsByArticle,
+  postComment,
+  patchComment,
+  deleteComment,
+};

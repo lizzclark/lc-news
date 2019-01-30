@@ -28,3 +28,10 @@ exports.addComment = (comment, article_id) => {
     .insert({ ...comment, article_id })
     .returning('*');
 };
+
+exports.voteOnComment = (comment_id, newVote) => {
+  return connection('comments')
+    .increment('votes', newVote)
+    .where({ comment_id })
+    .returning('*');
+};
