@@ -12,11 +12,8 @@ exports.addTopic = newTopic => {
 };
 
 exports.fetchArticlesByTopic = (
-  topic,
-  limit = 10,
-  sort_by = 'created_at',
-  order = 'desc',
-  p = 1
+  { limit = 10, sort_by = 'created_at', order = 'desc', p = 1 },
+  topic
 ) => {
   // pagination
   let offset = 0;

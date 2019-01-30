@@ -141,7 +141,6 @@ describe('NC news', () => {
           .get('/api/topics/mitch/articles?limit=7&p=2')
           .expect(200)
           .then(({ body: { articles } }) => {
-            console.log(articles);
             expect(articles[0].article_id).to.equal(9);
           });
       });
@@ -341,7 +340,7 @@ describe('NC news', () => {
       });
     });
   });
-  describe.only('/api/articles/:article_id/comments', () => {
+  describe('/api/articles/:article_id/comments', () => {
     describe('/', () => {
       it('GET 200 responds with an array of comments for the given article_id', () => {
         return request

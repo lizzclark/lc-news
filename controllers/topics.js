@@ -26,18 +26,15 @@ const postTopic = function(req, res, next) {
 
 const getArticlesByTopic = function(req, res, next) {
   const topicSlug = req.params.topic;
-  const { limit, sort_by, order, p } = req.query;
   // invoke model
-  fetchArticlesByTopic(topicSlug, limit, sort_by, order, p).then(
-    ([articles, countData]) => {
-      if (articles.length === 0) {
-        next({ status: 404, message: 'articles not found' });
-      } else {
-        const { total_count } = countData[0];
-        res.status(200).send({ total_count, articles });
-      }
+  fetchArticlesByTopic(req.query, topicSlug).then(([articles, countData]) => {
+    if (articles.length === 0) {
+      next({ status: 404, message: 'articles not found' });
+    } else {
+      const { total_count } = countData[0];
+      res.status(200).send({ total_count, articles });
     }
-  );
+  });
 };
 
 const postArticleInTopic = function(req, res, next) {
