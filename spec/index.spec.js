@@ -430,7 +430,7 @@ describe('NC news', () => {
           });
       });
     });
-    describe.only('POST /', () => {
+    describe('POST /', () => {
       it('POST 201 responds with the posted comment', () => {
         return request
           .post('/api/articles/3/comments')
@@ -450,7 +450,7 @@ describe('NC news', () => {
   });
 });
 
-// MEMO TO ME - what if user puts in a nonexistent query? how to handle things like ?limit=blah or ?limit=90000 or ?blah=blah or ?blah=200....
+// how to handle things like ?limit=blah or ?limit=90000 or ?blah=blah or ?blah=200....
 // limit = 90000 set a max of 10 OR just bring back all articles
 // limit wrong data type - 200 ignore
 // nonexistent query - knex will ignore this anyway

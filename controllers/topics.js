@@ -18,23 +18,22 @@ const postTopic = function(req, res, next) {
     .catch(err => {
       next({
         status: 400,
-        code: err.code,
         message: 'could not add this topic',
       });
     });
 };
 
 const getArticlesByTopic = function(req, res, next) {
-  const topicSlug = req.params.topic;
-  // invoke model
-  fetchArticlesByTopic(req.query, topicSlug).then(([articles, countData]) => {
-    if (articles.length === 0) {
-      next({ status: 404, message: 'articles not found' });
-    } else {
-      const { total_count } = countData[0];
-      res.status(200).send({ total_count, articles });
-    }
-  });
+  fetchArticlesByTopic(req.query, req.params)
+    .then(([articles, countData]) => {
+      if (articles.length !== 0) {
+        const { total_count } = countData[0];
+        res.status(200).send({ total_count, articles });
+      } else {
+        return Promise.reject({ status: 404, message: 'articles not found' });
+      }
+    })
+    .catch(next);
 };
 
 const postArticleInTopic = function(req, res, next) {
