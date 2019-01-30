@@ -5,6 +5,10 @@ const {
   patchVote,
   deleteArticle,
 } = require('../controllers/articles');
+const {
+  getCommentsByArticle,
+  postComment,
+} = require('../controllers/comments');
 const commentRouter = require('./commentRouter');
 
 articleRouter.get('/', getArticles);

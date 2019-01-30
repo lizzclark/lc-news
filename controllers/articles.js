@@ -33,8 +33,8 @@ const patchVote = function(req, res, next) {
 };
 
 const deleteArticle = function(req, res, next) {
-  strikeArticle(req.params.article_id).then(numRowsDeleted => {
-    if (numRowsDeleted === 1) {
+  strikeArticle(req.params.article_id).then(rowDeleted => {
+    if (rowDeleted) {
       res.status(204).send();
     } else {
       next({
