@@ -34,9 +34,8 @@ const patchVote = function(req, res, next) {
 
 const deleteArticle = function(req, res, next) {
   strikeArticle(req.params.article_id).then(numRowsDeleted => {
-    console.log(numRowsDeleted);
     if (numRowsDeleted === 1) {
-      res.status(204).send({ status: 204, message: 'no content' });
+      res.status(204).send();
     }
   });
 };

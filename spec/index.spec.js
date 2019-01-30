@@ -332,14 +332,8 @@ describe('NC news', () => {
           .send({ inc_votes: 12 })
           .expect(404);
       });
-      it('DELETE 204 no content deletes the article specified and responds with no-content message', () => {
-        return request
-          .delete('/api/articles/4')
-          .expect(204)
-          .then(res => {
-            console.log(res.status);
-            expect(res.body.message).to.equal('no content');
-          });
+      it('DELETE 204 no content deletes the article specified', () => {
+        return request.delete('/api/articles/4').expect(204);
       });
       // it('DELETE 404 not found - client tried to vote on nonexistent article', () => {
       //   return request
