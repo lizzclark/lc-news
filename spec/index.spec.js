@@ -335,11 +335,9 @@ describe('NC news', () => {
       it('DELETE 204 no content deletes the article specified', () => {
         return request.delete('/api/articles/4').expect(204);
       });
-      // it('DELETE 404 not found - client tried to vote on nonexistent article', () => {
-      //   return request
-      //     .delete('/api/articles/999')
-      //     .expect(404);
-      // });
+      it('DELETE 404 not found - client tried to vote on nonexistent article', () => {
+        return request.delete('/api/articles/999').expect(404);
+      });
     });
   });
 });

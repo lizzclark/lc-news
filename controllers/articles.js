@@ -36,6 +36,11 @@ const deleteArticle = function(req, res, next) {
   strikeArticle(req.params.article_id).then(numRowsDeleted => {
     if (numRowsDeleted === 1) {
       res.status(204).send();
+    } else {
+      next({
+        status: 404,
+        message: "can't delete a nonexistent article!",
+      });
     }
   });
 };
