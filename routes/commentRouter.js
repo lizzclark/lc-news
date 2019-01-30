@@ -1,10 +1,13 @@
 const commentRouter = require('express').Router({ mergeParams: true });
-const { getCommentsByArticle, addComment } = require('../controllers/comments');
+const {
+  getCommentsByArticle,
+  postComment,
+} = require('../controllers/comments');
 
 commentRouter
   .route('/')
   .get(getCommentsByArticle)
-  .post(addComment);
+  .post(postComment);
 
 // commentRouter
 //   .route('/:article_id/comments/:comment_id')

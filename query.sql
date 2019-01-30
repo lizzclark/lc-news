@@ -19,4 +19,4 @@
 --     .where({ article_id });
 -- };
 
-SELECT * FROM comments WHERE article_id = 1 ORDER BY comment_id DESC;
+SELECT * FROM comments WHERE article_id = 1 ORDER BY created_at DESC LIMIT 3 OFFSET 3;

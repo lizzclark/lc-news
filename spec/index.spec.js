@@ -341,7 +341,7 @@ describe('NC news', () => {
     });
   });
   describe('/api/articles/:article_id/comments', () => {
-    describe('/', () => {
+    describe('GET /', () => {
       it('GET 200 responds with an array of comments for the given article_id', () => {
         return request
           .get('/api/articles/9/comments')
@@ -364,7 +364,7 @@ describe('NC news', () => {
             expect(comments[0].author).to.equal('butter_bridge');
           });
       });
-      it('GET 404 not found - client requested nonexistent article_id or specified article with no comments', () => {
+      it('GET 404 not found - client requested nonexistent article_id or specified an article with no comments', () => {
         return request.get('/api/articles/111/comments').expect(404);
       });
       it('GET 200 response is limited to 10 comments DEFAULT CASE', () => {
@@ -403,19 +403,59 @@ describe('NC news', () => {
             );
           });
       });
+      it('GET 200 can be queried ?sort_ascending with a boolean to change sort order', () => {
+        return request
+          .get('/api/articles/1/comments?sort_ascending=true')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            const comment1Year = comments[0].created_at.slice(0, 4);
+            const comment10Year = comments[9].created_at.slice(0, 4);
+            expect(comment1Year < comment10Year).to.be.true;
+          });
+      });
+      it('GET 200 can be queried ?p to use 10-item pagination DEFAULT CASE', () => {
+        return request
+          .get('/api/articles/1/comments?p=2')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments[0].comment_id).to.equal(12);
+          });
+      });
+      it('GET 200 can use ?limit and ?p to set any page length', () => {
+        return request
+          .get('/api/articles/1/comments?limit=3&p=2')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments[0].comment_id).to.equal(5);
+          });
+      });
+    });
+    describe.only('POST /', () => {
+      it('POST 201 responds with the posted comment', () => {
+        return request
+          .post('/api/articles/3/comments')
+          .send({ username: 'butter_bridge', body: 'pugs are good' })
+          .expect(201)
+          .then(({ body: { comment } }) => {
+            expect(comment.body).to.equal('pugs are good');
+          });
+      });
+      it('POST 400 - client sent invalid comment data', () => {
+        return request
+          .post('/api/articles/3/comments')
+          .send({ pugs: 'butter_bridge', pigs: 'pugs are good' })
+          .expect(400);
+      });
     });
   });
 });
 
 // MEMO TO ME - what if user puts in a nonexistent query? how to handle things like ?limit=blah or ?limit=90000 or ?blah=blah or ?blah=200....
+// limit = 90000 set a max of 10 OR just bring back all articles
+// limit wrong data type - 200 ignore
+// nonexistent query - knex will ignore this anyway
 
 // it('GET / 404 client requests non-existent article ID') - so like "/articles/1000000"
 // knex responds with empty array
 // if (!article) return Promise.reject({status: 404, msg: "no such article"})
 // this sends the error object (that we just passed in) down to the catch block
-
-// it('GET / 40 (Bad Request) client requests invalid article ID') - so like "/articles/piglets"
-// knex responds with an error
-
-// 400 - make an errorCodes400 object to reference when you send the 400 -
-// because knex sends back certain codes in its errors

@@ -1,4 +1,4 @@
-const { fetchComments } = require('../models/comments');
+const { fetchComments, addComment } = require('../models/comments');
 
 const getCommentsByArticle = function(req, res, next) {
   const { article_id } = req.params;
@@ -10,8 +10,15 @@ const getCommentsByArticle = function(req, res, next) {
   });
 };
 
-const addComment = function(req, res, next) {
-  console.log('adding a comment to this article...');
+const postComment = function(req, res, next) {
+  const { article_id } = req.params;
+  addComment(req.body, article_id)
+    .then(([comment]) => {
+      return res.status(201).send({ comment });
+    })
+    .catch(err => {
+      next({ status: 400, message: 'cant post this comment' });
+    });
 };
 
-module.exports = { getCommentsByArticle, addComment };
+module.exports = { getCommentsByArticle, postComment };
