@@ -49,10 +49,15 @@ const postArticleInTopic = function(req, res, next) {
       res.status(201).send({ article });
     })
     .catch(err => {
-      return next({
-        status: 400,
-        message: 'article not formatted correctly',
-      });
+      if (err.code === '23502') {
+        return next({
+          status: 400,
+          message: 'article not formatted correctly',
+        });
+      }
+      if (err.code === '23503') {
+        return next({ status: 404, message: 'no such topic' });
+      }
     });
 };
 

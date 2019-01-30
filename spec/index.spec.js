@@ -137,7 +137,7 @@ describe('NC news', () => {
         });
     });
   });
-  describe.only('POST /api/topics/:topic/articles', () => {
+  describe('POST /api/topics/:topic/articles', () => {
     it('POST 201 responds with posted article', () => {
       return request
         .post('/api/topics/cats/articles')
@@ -166,7 +166,16 @@ describe('NC news', () => {
           username: 'butter_bridge',
         })
         .expect(404);
-      // should I be making it do different status codes for the 2 above cases?
+    });
+  });
+  describe.only('/api/articles', () => {
+    it('GET / 200 responds with an array of articles', () => {
+      return request
+        .get('/api/articles')
+        .expect(200)
+        .then(res => {
+          expect(res.body.articles[0]).contains.keys('article_id');
+        });
     });
   });
 });
