@@ -13,7 +13,8 @@
     "migrate-rollback": "knex migrate:rollback",
     "setup-dbs": "psql -f db/setup.sql && psql -f db/setup_test.sql",
     "seed": "knex seed:run",
-    "dev": "nodemon listen.js"
+    "dev": "nodemon listen.js",
+    "start": "node listen.js"
   },
   "repository": {
     "type": "git",
