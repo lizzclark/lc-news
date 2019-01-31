@@ -365,10 +365,7 @@ describe('NC news', () => {
           });
       });
       it('404 not found if ?p asks for a nonexistent page', () => {
-        return request
-          .get('/api/articles?limit=1&p=22')
-          .expect(404)
-          .then(res => console.log(res.body));
+        return request.get('/api/articles?limit=1&p=22').expect(404);
       });
       it('?dogs=friendly - nonexistent queries ignored', () => {
         return request
@@ -530,7 +527,7 @@ describe('NC news', () => {
           });
       });
     });
-    describe.only('GET / WEIRD QUERIES', () => {
+    describe('GET / WEIRD QUERIES', () => {
       it('?limit greater than number of comments - just brings back all comments', () => {
         return request
           .get('/api/articles/1/comments?limit=25')
@@ -555,6 +552,18 @@ describe('NC news', () => {
             expect(comments[0].created_at.slice(0, 4)).to.equal('2016');
             expect(comments[9].created_at.slice(0, 4)).to.equal('2007');
           });
+      });
+      it('?sort_ascending - can only be true or false, defaults to false', () => {
+        return request
+          .get('/api/articles/1/comments?sort_ascending=bunnies')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments[0].created_at.slice(0, 4)).to.equal('2016');
+            expect(comments[9].created_at.slice(0, 4)).to.equal('2007');
+          });
+      });
+      it('404 not found if ?p asks for a nonexistent page', () => {
+        return request.get('/api/articles/1/comments?p=22').expect(404);
       });
     });
 
@@ -597,13 +606,12 @@ describe('NC news', () => {
           .send({ inc_votes: 1 })
           .expect(404);
       });
-      // This gives 200 and it shouldn't - the comment does exist so it works, but the article doesn't...
-      // it('PATCH 404 not found - client tried to vote on comment for nonexistent article', () => {
-      //   return request
-      //     .patch('/api/articles/99/comments/7')
-      //     .send({ inc_votes: 1 })
-      //     .expect(404);
-      // });
+      it.only('PATCH 404 not found - client tried to vote on comment for nonexistent article', () => {
+        return request
+          .patch('/api/articles/99/comments/7')
+          .send({ inc_votes: 1 })
+          .expect(404);
+      });
     });
     describe('DELETE /:comment_id', () => {
       it('DELETE 204 no content deletes the comment', () => {

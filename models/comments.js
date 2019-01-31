@@ -4,11 +4,12 @@ exports.fetchComments = (
   article_id,
   { limit = 10, sort_by = 'created_at', sort_ascending = false, p = 1 }
 ) => {
-  // determine sort order
+  // validate sort_ascending, determine sort order
   let sortOrder = 'desc';
-  if (sort_ascending) {
+  if (sort_ascending === 'true') {
     sortOrder = 'asc';
   }
+
   // pagination
   let offset = 0;
   if (p > 1) {
