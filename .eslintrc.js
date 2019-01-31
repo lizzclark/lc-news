@@ -19,5 +19,6 @@ module.exports = {
     'object-curly-newline': 0,
     'comma-dangle': 0,
     'space-before-function-paren': 0,
+    'arrow-body-style': 0,
   },
 };

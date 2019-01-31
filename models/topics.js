@@ -20,6 +20,25 @@ exports.fetchArticlesByTopic = (
   if (p > 1) {
     offset = limit * (p - 1);
   }
+
+  // validate limit
+  if (Number.isNaN(+limit)) limit = 10;
+
+  // validate sort_by
+  const columnNames = {
+    author: 'string',
+    title: 'string',
+    article_id: 'number',
+    votes: 'number',
+    comment_count: 'number',
+    created_at: 'date',
+    topic: 'string',
+  };
+  if (!columnNames[sort_by]) sort_by = 'created_at';
+
+  // validate sort order query
+  if (order !== 'asc' && order !== 'desc') order = 'desc';
+
   // return articles and a total count of all the articles for this topic
   return Promise.all([
     connection

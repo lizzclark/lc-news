@@ -22,6 +22,7 @@ describe('NC news', () => {
   after(() => {
     connection.destroy();
   });
+
   describe('/api/topics', () => {
     describe('/', () => {
       it('GET /topics 200 & responds with an array of topics', () => {
@@ -145,6 +146,53 @@ describe('NC news', () => {
           });
       });
     });
+    describe('GET /api/topics/:topic/articles WEIRD QUERIES', () => {
+      it('?limit greater than number of articles - just brings back all articles', () => {
+        return request
+          .get('/api/topics/mitch/articles?limit=500')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(11);
+          });
+      });
+      it('?limit wrong data type - ignore the query, default to limit 10', () => {
+        return request
+          .get('/api/topics/mitch/articles?limit=blah')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(10);
+          });
+      });
+      it('?sort_by - if it isnt a valid column name, default to created_at as normal', () => {
+        return request
+          .get('/api/topics/mitch/articles?sort_by=potatocakes')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].created_at.slice(0, 4)).to.equal('2018');
+            expect(articles[9].created_at.slice(0, 4)).to.equal('1978');
+          });
+      });
+      it('?order - can only be asc or desc, defaults to desc if given anything else', () => {
+        return request
+          .get('/api/topics/mitch/articles?order=cat')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].created_at.slice(0, 4)).to.equal('2018');
+            expect(articles[9].created_at.slice(0, 4)).to.equal('1978');
+          });
+      });
+      it('404 not found ?p - if asked for a nonexistent page', () => {
+        return request.get('/api/topics/mitch/articles?p=101').expect(404);
+      });
+      it("?cats=fluffy - ignores queries that don't exist", () => {
+        return request
+          .get('/api/topics/mitch/articles?cats=fluffy')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].article_id).to.equal(1);
+          });
+      });
+    });
     describe('POST /api/topics/:topic/articles', () => {
       it('POST 201 responds with posted article', () => {
         return request
@@ -177,6 +225,7 @@ describe('NC news', () => {
       });
     });
   });
+
   describe('/api/articles', () => {
     describe('GET /', () => {
       it('GET / 200 responds with an array of articles', () => {
@@ -280,6 +329,56 @@ describe('NC news', () => {
           });
       });
     });
+    describe('GET /api/articles WEIRD QUERIES', () => {
+      it('?limit greater than number of articles - just brings back all articles', () => {
+        return request
+          .get('/api/articles?limit=500')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(12);
+          });
+      });
+      it('?limit wrong data type - ignore the query, default to limit 10', () => {
+        return request
+          .get('/api/articles?limit=blah')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(10);
+          });
+      });
+      it('?sort_by - if it isnt a valid column name, default to created_at as normal', () => {
+        return request
+          .get('/api/articles?sort_by=pasteisdenata')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].created_at.slice(0, 4)).to.equal('2018');
+            expect(articles[9].created_at.slice(0, 4)).to.equal('1982');
+          });
+      });
+      it('?order can be only asc or desc - default to desc if given anything else', () => {
+        return request
+          .get('/api/articles?order=pig')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].created_at.slice(0, 4)).to.equal('2018');
+            expect(articles[9].created_at.slice(0, 4)).to.equal('1982');
+          });
+      });
+      it('404 not found if ?p asks for a nonexistent page', () => {
+        return request
+          .get('/api/articles?limit=1&p=22')
+          .expect(404)
+          .then(res => console.log(res.body));
+      });
+      it('?dogs=friendly - nonexistent queries ignored', () => {
+        return request
+          .get('/api/articles?dogs=friendly')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].article_id).to.equal(1);
+          });
+      });
+    });
     describe('GET /articles/:article_id', () => {
       it('GET 200 responds with a single article object', () => {
         return request
@@ -340,7 +439,8 @@ describe('NC news', () => {
       });
     });
   });
-  describe.only('/api/articles/:article_id/comments', () => {
+
+  describe('/api/articles/:article_id/comments', () => {
     describe('GET /', () => {
       it('GET 200 responds with an array of comments for the given article_id', () => {
         return request
@@ -430,6 +530,34 @@ describe('NC news', () => {
           });
       });
     });
+    describe.only('GET / WEIRD QUERIES', () => {
+      it('?limit greater than number of comments - just brings back all comments', () => {
+        return request
+          .get('/api/articles/1/comments?limit=25')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments.length).to.equal(13);
+          });
+      });
+      it('?limit wrong data type - ignore the query, default to limit 10', () => {
+        return request
+          .get('/api/articles/1/comments?limit=blah')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments.length).to.equal(10);
+          });
+      });
+      it('?sort_by - if it isnt a valid column, default to created_at as normal', () => {
+        return request
+          .get('/api/articles/1/comments?sort_by=author_age')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments[0].created_at.slice(0, 4)).to.equal('2016');
+            expect(comments[9].created_at.slice(0, 4)).to.equal('2007');
+          });
+      });
+    });
+
     describe('POST /', () => {
       it('POST 201 responds with the posted comment', () => {
         return request
@@ -487,15 +615,3 @@ describe('NC news', () => {
     });
   });
 });
-
-// how to handle things like ?limit=blah or ?limit=90000 or ?blah=blah or ?blah=200....
-// limit = 90000 set a max of 10 OR just bring back all articles
-// limit wrong data type - 200 ignore
-// nonexistent query - knex will ignore this anyway
-
-// also todo: validate all the different queries for each query-able endpoint
-
-// it('GET / 404 client requests non-existent article ID') - so like "/articles/1000000"
-// knex responds with empty array
-// if (!article) return Promise.reject({status: 404, msg: "no such article"})
-// this sends the error object (that we just passed in) down to the catch block

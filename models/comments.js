@@ -14,6 +14,21 @@ exports.fetchComments = (
   if (p > 1) {
     offset = limit * (p - 1);
   }
+
+  // validate limit
+  if (Number.isNaN(+limit)) limit = 10;
+
+  // validate sort_by
+  const validColumns = {
+    comment_id: 'number',
+    username: 'string',
+    article_id: 'number',
+    votes: 'number',
+    created_at: 'date',
+    body: 'string',
+  };
+  if (!validColumns[sort_by]) sort_by = 'created_at';
+
   return connection
     .select('comment_id', 'votes', 'created_at', 'username as author', 'body')
     .from('comments')

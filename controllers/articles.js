@@ -7,11 +7,18 @@ const {
 
 const getArticles = function(req, res, next) {
   const { limit, sort_by, order, p } = req.query;
-  fetchArticles(limit, sort_by, order, p).then(([articles, countInfo]) => {
-    const { total_count } = countInfo[0];
-    res.status(200).send({ total_count, articles });
-  });
+  fetchArticles(limit, sort_by, order, p)
+    .then(([articles, countInfo]) => {
+      if (articles.length !== 0) {
+        const { total_count } = countInfo[0];
+        res.status(200).send({ total_count, articles });
+      } else {
+        return Promise.reject({ status: 404, message: 'articles not found' });
+      }
+    })
+    .catch(next);
 };
+
 const getArticleById = function(req, res, next) {
   fetchArticleById(req.params)
     .then(([article]) => {
