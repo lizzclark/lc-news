@@ -56,8 +56,12 @@ const patchComment = function(
     .catch(next);
 };
 
-const deleteComment = function({ params: { comment_id } }, res, next) {
-  strikeComment(comment_id)
+const deleteComment = function(
+  { params: { comment_id, article_id } },
+  res,
+  next
+) {
+  strikeComment(comment_id, article_id)
     .then(rowDeleted => {
       if (rowDeleted) res.status(204).send();
       else {

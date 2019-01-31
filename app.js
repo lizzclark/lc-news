@@ -5,10 +5,18 @@ const apiRouter = require('./routes/apiRouter');
 app.use(bodyParser.json());
 app.use('/api', apiRouter);
 app.use((err, req, res, next) => {
-  const { message, status } = err;
   console.log('you graced the error handler with your presence');
-  console.log(err);
-  res.status(status).send({ message });
+  // 500 if this is an unhandled knex error
+  if (err.code) {
+    res
+      .status(500)
+      .send({ status: 500, message: 'sorry, something went wrong' });
+  } else {
+    // if this is an error defined by NC news, send it back with the relevant status
+    const { message, status } = err;
+    console.log(message);
+    res.status(status).send({ message });
+  }
 });
 
 module.exports = app;

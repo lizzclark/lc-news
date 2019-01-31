@@ -23,6 +23,15 @@ describe('NC news', () => {
     connection.destroy();
   });
 
+  describe('/api', () => {
+    // it('responds with a JSON object of all the endpoints', () => {
+    //   // expect()
+    // });
+    it('gives a 404 error for invalid paths', () => {
+      return request.get('/api/users/lizz/favourite_animal').expect(404);
+    });
+  });
+
   describe('/api/topics', () => {
     describe('/', () => {
       it('GET /topics 200 & responds with an array of topics', () => {
@@ -46,6 +55,12 @@ describe('NC news', () => {
         return request
           .post('/api/topics')
           .send({ slug: 'slugs', frogs: 'are great' })
+          .expect(400);
+      });
+      it('POST 400 Bad Request - client tried to add duplicate topic', () => {
+        return request
+          .post('/api/topics')
+          .send({ slug: 'mitch', description: 'man with cable knit jumper' })
           .expect(400);
       });
     });
@@ -606,7 +621,7 @@ describe('NC news', () => {
           .send({ inc_votes: 1 })
           .expect(404);
       });
-      it.only('PATCH 404 not found - client tried to vote on comment for nonexistent article', () => {
+      it('PATCH 404 not found - client tried to vote on comment for nonexistent article', () => {
         return request
           .patch('/api/articles/99/comments/7')
           .send({ inc_votes: 1 })
@@ -619,6 +634,101 @@ describe('NC news', () => {
       });
       it('DELETE 404 not found - client tried to delete nonexistent comment', () => {
         return request.delete('/api/articles/1/comments/444').expect(404);
+      });
+      it('DELETE 404 not found - client tried to delete comment for nonexistent article', () => {
+        return request.delete('/api/articles/999/comments/7').expect(404);
+      });
+    });
+  });
+
+  describe('/api/users', () => {
+    describe('/', () => {
+      it('GET / 200 returns an array of users', () => {
+        return request
+          .get('/api/users')
+          .expect(200)
+          .then(({ body: { users } }) => {
+            expect(users).to.be.an('array');
+            expect(users[0]).contains.keys('username', 'avatar_url', 'name');
+          });
+      });
+      it('POST 201 returns new user object', () => {
+        return request
+          .post('/api/users')
+          .send({
+            name: 'bilbo',
+            username: 'fuzzysocks101',
+            avatar_url: 'www.avatars.com/55',
+          })
+          .expect(201)
+          .then(({ body: { user } }) => {
+            expect(user.name).to.equal('bilbo');
+            expect(user.username).to.equal('fuzzysocks101');
+            expect(user.avatar_url).to.equal('www.avatars.com/55');
+          });
+      });
+      it('POST 400 Bad Request - client sent invalid user data', () => {
+        return request
+          .post('/api/users')
+          .send({ size: 'big', nose: 'red' })
+          .expect(400);
+      });
+      it('POST 400 Bad Request - client sent duplicate user data', () => {
+        return request
+          .post('/api/users')
+          .send({
+            name: 'jonny',
+            username: 'butter_bridge',
+            avatar_url:
+              'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
+          })
+          .expect(400);
+      });
+    });
+    describe.only('/users/:username', () => {
+      it('GET / 200 responds with a user object', () => {
+        return request
+          .get('/api/users/butter_bridge')
+          .expect(200)
+          .then(({ body: { user } }) => {
+            expect(user).contains.keys('username', 'name', 'avatar_url');
+          });
+      });
+      it('GET / 404 not found - client requested nonexistent user', () => {
+        return request.get('/api/users/toastedpancake44').expect(404);
+      });
+    });
+    describe.only('/users/:username/articles', () => {
+      it('GET / 200 responds with all the articles for that user', () => {
+        return request
+          .get('/api/users/butter_bridge/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.have.length(3);
+            expect(articles[0]).contains.keys(
+              'title',
+              'article_id',
+              'votes',
+              'created_at',
+              'topic'
+            );
+          });
+      });
+      it('GET / 200 gives articles with an author property', () => {
+        return request
+          .get('/api/users/butter_bridge/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].author).to.equal('butter_bridge');
+          });
+      });
+      it('GET / 200 gives articles with a comment_count', () => {
+        return request
+          .get('/api/users/butter_bridge/articles')
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles[0].comment_count).to.equal(3);
+          });
       });
     });
   });
