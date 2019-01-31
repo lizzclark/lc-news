@@ -23,16 +23,22 @@ describe('NC news', () => {
     connection.destroy();
   });
 
-  describe.only('/api', () => {
+  describe('/api', () => {
     it('responds with a JSON object of all the endpoints', () => {
       return request
         .get('/api')
         .expect(200)
         .then(({ body }) => {
-          expect(body).contains.keys(
+          expect(body.endpoints).contains.keys(
             '/api/topics',
             '/api/topics/:topic/articles',
-            '/api/articles'
+            '/api/articles',
+            '/api/articles/:article_id',
+            '/api/articles/:article_id/comments',
+            '/api/articles/:article_id/comments/:comment_id',
+            '/api/users',
+            '/api/users/:username',
+            '/api/users/:username/articles'
           );
         });
     });
