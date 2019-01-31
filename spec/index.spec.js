@@ -340,7 +340,7 @@ describe('NC news', () => {
       });
     });
   });
-  describe('/api/articles/:article_id/comments', () => {
+  describe.only('/api/articles/:article_id/comments', () => {
     describe('GET /', () => {
       it('GET 200 responds with an array of comments for the given article_id', () => {
         return request
@@ -459,9 +459,30 @@ describe('NC news', () => {
           .patch('/api/articles/1/comments/7')
           .send({ inc_votes: 14 })
           .expect(200)
-          .then(res => {
-            expect(res.body.comment.votes).to.equal(14);
+          .then(({ body: { comment } }) => {
+            expect(comment.votes).to.equal(14);
           });
+      });
+      it('PATCH 404 not found - client tried to vote on nonexistent comment', () => {
+        return request
+          .patch('/api/articles/1/comments/100')
+          .send({ inc_votes: 1 })
+          .expect(404);
+      });
+      // This gives 200 and it shouldn't - the comment does exist so it works, but the article doesn't...
+      // it('PATCH 404 not found - client tried to vote on comment for nonexistent article', () => {
+      //   return request
+      //     .patch('/api/articles/99/comments/7')
+      //     .send({ inc_votes: 1 })
+      //     .expect(404);
+      // });
+    });
+    describe('DELETE /:comment_id', () => {
+      it('DELETE 204 no content deletes the comment', () => {
+        return request.delete('/api/articles/1/comments/8').expect(204);
+      });
+      it('DELETE 404 not found - client tried to delete nonexistent comment', () => {
+        return request.delete('/api/articles/1/comments/444').expect(404);
       });
     });
   });

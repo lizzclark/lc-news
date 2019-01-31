@@ -35,3 +35,9 @@ exports.voteOnComment = (comment_id, newVote) => {
     .where({ comment_id })
     .returning('*');
 };
+
+exports.strikeComment = comment_id => {
+  return connection('comments')
+    .where({ comment_id })
+    .del();
+};

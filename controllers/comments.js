@@ -2,6 +2,7 @@ const {
   fetchComments,
   addComment,
   voteOnComment,
+  strikeComment,
 } = require('../models/comments');
 
 const getCommentsByArticle = function(req, res, next) {
@@ -38,13 +39,31 @@ const postComment = function(req, res, next) {
 
 const patchComment = function({ params: { comment_id }, body }, res, next) {
   const newVote = body.inc_votes;
-  voteOnComment(comment_id, newVote).then(([comment]) => {
-    res.status(200).send({ comment });
-  });
+  voteOnComment(comment_id, newVote)
+    .then(([comment]) => {
+      if (comment) res.status(200).send({ comment });
+      else {
+        return Promise.reject({
+          status: 404,
+          message: 'no such comment to patch',
+        });
+      }
+    })
+    .catch(next);
 };
 
-const deleteComment = function(req, res, next) {
-  console.log('deleting comment...');
+const deleteComment = function({ params: { comment_id } }, res, next) {
+  strikeComment(comment_id)
+    .then(rowDeleted => {
+      if (rowDeleted) res.status(204).send();
+      else {
+        return Promise.reject({
+          status: 404,
+          message: 'no such comment to delete',
+        });
+      }
+    })
+    .catch(next);
 };
 
 module.exports = {
