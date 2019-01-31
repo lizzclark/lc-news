@@ -45,10 +45,10 @@ exports.addComment = (comment, article_id) => {
     .returning('*');
 };
 
-exports.voteOnComment = (comment_id, newVote) => {
+exports.voteOnComment = (comment_id, article_id, newVote) => {
   return connection('comments')
     .increment('votes', newVote)
-    .where({ comment_id })
+    .where({ comment_id, article_id })
     .returning('*');
 };
 

@@ -37,9 +37,13 @@ const postComment = function(req, res, next) {
     });
 };
 
-const patchComment = function({ params: { comment_id }, body }, res, next) {
+const patchComment = function(
+  { params: { comment_id, article_id }, body },
+  res,
+  next
+) {
   const newVote = body.inc_votes;
-  voteOnComment(comment_id, newVote)
+  voteOnComment(comment_id, article_id, newVote)
     .then(([comment]) => {
       if (comment) res.status(200).send({ comment });
       else {
