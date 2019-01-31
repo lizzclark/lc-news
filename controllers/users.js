@@ -33,8 +33,11 @@ exports.getUserByUsername = ({ params: { username } }, res, next) => {
     .catch(next);
 };
 
-exports.getArticlesByUser = ({ params: { username } }, res, next) => {
-  fetchArticlesByUser(username).then(articles => {
-    res.status(200).send({ articles });
-  });
+exports.getArticlesByUser = ({ params: { username }, query }, res, next) => {
+  fetchArticlesByUser(username, query)
+    .then(articles => {
+      if (articles.length !== 0) res.status(200).send({ articles });
+      else return Promise.reject({ status: 404, message: 'not found' });
+    })
+    .catch(next);
 };

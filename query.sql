@@ -1,22 +1,10 @@
 \c nc_news_test;
 
-SELECT articles.username AS author, articles.article_id, articles.votes, articles.created_at, articles.topic, COUNT(comments.comment_id) AS comment_count
-FROM articles
-LEFT JOIN comments
-ON comments.article_id = articles.article_id
-GROUP BY articles.article_id; 
-
---     .select(
---       'username as author',
---       'article_id',
---       'title',
---       'votes',
---       'body',
---       'created_at',
---       'topic'
---     )
---     .from('articles')
---     .where({ article_id });
--- };
-
-SELECT * FROM comments WHERE article_id = 1 ORDER BY created_at DESC LIMIT 3 OFFSET 3;
+SELECT articles.username AS author, articles.votes, articles.title, articles.article_id, articles.topic, articles.created_at,
+COUNT(comments.comment_id) AS comment_count
+FROM articles 
+LEFT JOIN comments 
+ON articles.article_id = comments.article_id 
+WHERE articles.username = 'icellusedkars'
+GROUP BY articles.article_id
+;

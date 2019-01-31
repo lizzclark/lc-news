@@ -23,10 +23,19 @@ describe('NC news', () => {
     connection.destroy();
   });
 
-  describe('/api', () => {
-    // it('responds with a JSON object of all the endpoints', () => {
-    //   // expect()
-    // });
+  describe.only('/api', () => {
+    it('responds with a JSON object of all the endpoints', () => {
+      return request
+        .get('/api')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).contains.keys(
+            '/api/topics',
+            '/api/topics/:topic/articles',
+            '/api/articles'
+          );
+        });
+    });
     it('gives a 404 error for invalid paths', () => {
       return request.get('/api/users/lizz/favourite_animal').expect(404);
     });
@@ -219,7 +228,8 @@ describe('NC news', () => {
           })
           .expect(201)
           .then(({ body: { article } }) => {
-            expect(article[0].title).to.equal('I like CATS');
+            expect(article).to.be.an('object');
+            expect(article.title).to.equal('I like CATS');
           });
       });
       it('POST 400 Bad Request - client tried to post an article in wrong format', () => {
@@ -589,6 +599,7 @@ describe('NC news', () => {
           .send({ username: 'butter_bridge', body: 'pugs are good' })
           .expect(201)
           .then(({ body: { comment } }) => {
+            expect(comment).to.be.an('object');
             expect(comment.body).to.equal('pugs are good');
           });
       });
@@ -685,7 +696,7 @@ describe('NC news', () => {
           .expect(400);
       });
     });
-    describe.only('/users/:username', () => {
+    describe('GET /users/:username', () => {
       it('GET / 200 responds with a user object', () => {
         return request
           .get('/api/users/butter_bridge')
@@ -698,7 +709,7 @@ describe('NC news', () => {
         return request.get('/api/users/toastedpancake44').expect(404);
       });
     });
-    describe.only('/users/:username/articles', () => {
+    describe('GET /users/:username/articles', () => {
       it('GET / 200 responds with all the articles for that user', () => {
         return request
           .get('/api/users/butter_bridge/articles')
@@ -726,9 +737,104 @@ describe('NC news', () => {
         return request
           .get('/api/users/butter_bridge/articles')
           .expect(200)
-          .then(res => {
-            expect(res.body.articles[0].comment_count).to.equal(3);
+          .then(({ body: { articles } }) => {
+            expect(articles[0].comment_count).to.equal('13');
           });
+      });
+      it('GET 404 Not Found - client requested articles for nonexistent user', () => {
+        return request.get('/api/users/butter_bench/articles').expect(404);
+      });
+      it('GET / 200 limits responses to 10 DEFAULT CASE', () => {
+        return request
+          .get('/api/users/butter_bridge/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.be.below(11);
+          });
+      });
+      it('GET / 200 can be queried ?limit', () => {
+        return request
+          .get('/api/users/butter_bridge/articles?limit=2')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.have.length(2);
+          });
+      });
+      it('GET ?limit=5000 just returns all the articles', () => {
+        return request
+          .get('/api/users/icellusedkars/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.have.length(6);
+          });
+      });
+      it('GET ?limit=blah wrong data type - just returns all the articles', () => {
+        return request
+          .get('/api/users/icellusedkars/articles?limit=sausage')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.have.length(6);
+          });
+      });
+      it('GET / 200 sorts by created_at desc DEFAULT CASE', () => {
+        return request
+          .get('/api/users/butter_bridge/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].created_at.slice(0, 4)).to.equal('2018');
+            expect(articles[2].created_at.slice(0, 4)).to.equal('1974');
+          });
+      });
+      it('GET / 200 can be queried ?sort_by', () => {
+        return request
+          .get('/api/users/butter_bridge/articles?sort_by=title')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].title).to.equal(
+              "They're not exactly dogs, are they?"
+            );
+            expect(articles[2].title).to.equal(
+              'Living in the shadow of a great man'
+            );
+          });
+      });
+      it('GET ?sort_by=cats_owned nonexistent column - sorts by default column of created_at', () => {
+        return request
+          .get('/api/users/icellusedkars/articles?sort_by=cats_owned')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].created_at.slice(0, 4)).to.equal('2014');
+            expect(articles[5].created_at.slice(0, 4)).to.equal('1978');
+          });
+      });
+      it('GET / 200 can be queried ?order=asc to sort ascending', () => {
+        return request
+          .get('/api/users/butter_bridge/articles?order=asc')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].created_at.slice(0, 4)).to.equal('1974');
+            expect(articles[2].created_at.slice(0, 4)).to.equal('2018');
+          });
+      });
+      it('GET ?order can only be asc or desc - anything else defaults to desc', () => {
+        return request
+          .get('/api/users/icellusedkars/articles?order=bat')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].created_at.slice(0, 4)).to.equal('2014');
+            expect(articles[5].created_at.slice(0, 4)).to.equal('1978');
+          });
+      });
+      it('GET / 200 can be queried ?p to see pages', () => {
+        return request
+          .get('/api/users/icellusedkars/articles?limit=3&p=2')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0].article_id).to.equal(7);
+          });
+      });
+      it("GET 404 Not Found - client requested page that doesn't exist", () => {
+        return request.get('/api/users/icellusedkars/articles?p=3').expect(404);
       });
     });
   });

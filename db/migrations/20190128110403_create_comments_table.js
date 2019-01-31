@@ -11,7 +11,7 @@ exports.up = function(connection, Promise) {
       .notNullable();
     commentsTable.integer('votes').defaultTo(0);
     commentsTable.text('body').notNullable();
-    commentsTable.timestamp('created_at', true);
+    commentsTable.timestamp('created_at', true).defaultTo(connection.fn.now());
   });
 };
 

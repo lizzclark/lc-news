@@ -41,7 +41,7 @@ const postArticleInTopic = function(req, res, next) {
   const { title, username, body } = req.body;
   const newArticle = { topic, title, username, body };
   addArticle(newArticle)
-    .then(article => {
+    .then(([article]) => {
       res.status(201).send({ article });
     })
     .catch(err => {
