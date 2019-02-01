@@ -61,7 +61,7 @@ exports.fetchArticlesByTopic = (
     connection
       .count('article_id as total_count')
       .from('articles')
-      .groupBy('article_id')
+      .groupBy('topic')
       .where({ topic }),
   ]);
 };
