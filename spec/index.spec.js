@@ -731,6 +731,14 @@ describe('NC news', () => {
             );
           });
       });
+      it('GET / 200 responds with a total_count property', () => {
+        return request
+          .get('/api/users/butter_bridge/articles')
+          .expect(200)
+          .then(({ body: { total_count } }) => {
+            expect(total_count).to.equal('3');
+          });
+      });
       it('GET / 200 gives articles with an author property', () => {
         return request
           .get('/api/users/butter_bridge/articles')

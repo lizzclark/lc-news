@@ -46,21 +46,28 @@ exports.fetchArticlesByUser = (
   // validate order
   if (order !== 'asc') order = 'desc';
 
-  return connection
-    .select(
-      'articles.username as author',
-      'articles.votes',
-      'articles.title',
-      'articles.article_id',
-      'articles.topic',
-      'articles.created_at'
-    )
-    .count('comments.comment_id as comment_count')
-    .from('articles')
-    .leftJoin('comments', 'comments.article_id', 'articles.article_id')
-    .groupBy('articles.article_id')
-    .limit(limit)
-    .orderBy(sort_by, order)
-    .offset(offset)
-    .where({ 'articles.username': username });
+  return Promise.all([
+    connection
+      .select(
+        'articles.username as author',
+        'articles.votes',
+        'articles.title',
+        'articles.article_id',
+        'articles.topic',
+        'articles.created_at'
+      )
+      .count('comments.comment_id as comment_count')
+      .from('articles')
+      .leftJoin('comments', 'comments.article_id', 'articles.article_id')
+      .groupBy('articles.article_id')
+      .limit(limit)
+      .orderBy(sort_by, order)
+      .offset(offset)
+      .where({ 'articles.username': username }),
+    connection
+      .count('article_id as total_count')
+      .from('articles')
+      .groupBy('username')
+      .where({ username }),
+  ]);
 };

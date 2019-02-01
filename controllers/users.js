@@ -35,9 +35,11 @@ exports.getUserByUsername = ({ params: { username } }, res, next) => {
 
 exports.getArticlesByUser = ({ params: { username }, query }, res, next) => {
   fetchArticlesByUser(username, query)
-    .then(articles => {
-      if (articles.length !== 0) res.status(200).send({ articles });
-      else return Promise.reject({ status: 404, message: 'not found' });
+    .then(([articles, countData]) => {
+      if (articles.length !== 0) {
+        const [{ total_count }] = countData;
+        res.status(200).send({ total_count, articles });
+      } else return Promise.reject({ status: 404, message: 'not found' });
     })
     .catch(next);
 };
