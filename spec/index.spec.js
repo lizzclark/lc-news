@@ -8,22 +8,15 @@ const request = supertest(app);
 
 describe('NC news', () => {
   beforeEach(() => {
-    // this function gets called before every test
     return connection.migrate
       .rollback()
-      .then(() => {
-        return connection.migrate.latest();
-      })
-      .then(() => {
-        return connection.seed.run();
-      });
+      .then(() => connection.migrate.latest())
+      .then(() => connection.seed.run());
   });
 
-  after(() => {
-    connection.destroy();
-  });
+  after(() => connection.destroy());
 
-  describe('/api', () => {
+  describe.only('/api', () => {
     it('responds with a JSON object of all the endpoints', () => {
       return request
         .get('/api')
@@ -37,7 +30,7 @@ describe('NC news', () => {
         });
     });
     it('gives a 404 error for invalid paths', () => {
-      return request.get('/api/users/lizz/favourite_animal').expect(404);
+      return request.get('/bad').expect(404);
     });
   });
 
@@ -60,13 +53,13 @@ describe('NC news', () => {
             expect(topic[0]).contains.keys('slug', 'description');
           });
       });
-      it('POST 400 Bad Request - client tried to add invalid topic data', () => {
+      it('POST 400 Bad Request - invalid topic data', () => {
         return request
           .post('/api/topics')
           .send({ slug: 'slugs', frogs: 'are great' })
           .expect(400);
       });
-      it('POST 400 Bad Request - client tried to add duplicate topic', () => {
+      it('POST 400 Bad Request - duplicate topic', () => {
         return request
           .post('/api/topics')
           .send({ slug: 'mitch', description: 'man with cable knit jumper' })
@@ -90,7 +83,7 @@ describe('NC news', () => {
             );
           });
       });
-      it('GET /api/topics/:topic/articles 404 not found - client tried to get articles for nonexistent topic', () => {
+      it('GET /api/topics/:topic/articles 404 not found - nonexistent topic', () => {
         return request.get('/api/topics/dogs/articles').expect(404);
       });
       it('GET /api/topics/:topic/articles 200 responds with a total_count property giving the total number of articles', () => {
@@ -232,13 +225,13 @@ describe('NC news', () => {
             expect(article.title).to.equal('I like CATS');
           });
       });
-      it('POST 400 Bad Request - client tried to post an article in wrong format', () => {
+      it('POST 400 Bad Request - article in wrong format', () => {
         return request
           .post('/api/topics/cats/articles')
           .send({ cats: true, dogs: false })
           .expect(400);
       });
-      it('POST 404 not found - client tried to post an article to nonexistent topic', () => {
+      it('POST 404 not found -post article to nonexistent topic', () => {
         return request
           .post('/api/topics/doggos/articles')
           .send({
@@ -418,7 +411,7 @@ describe('NC news', () => {
             expect(article.comment_count).to.equal('13');
           });
       });
-      it('GET 404 not found - client requested nonexistent article_id', () => {
+      it('GET 404 not found - nonexistent article_id', () => {
         return request.get('/api/articles/99').expect(404);
       });
       it('PATCH 200 updates votes for article and responds with updated article', () => {
@@ -439,7 +432,7 @@ describe('NC news', () => {
             expect(article.votes).to.equal(-2);
           });
       });
-      it('PATCH 404 not found - client tried to vote on nonexistent article', () => {
+      it('PATCH 404 not found - vote on nonexistent article', () => {
         return request
           .patch('/api/articles/999')
           .send({ inc_votes: 12 })
@@ -457,7 +450,7 @@ describe('NC news', () => {
       it('DELETE 204 no content deletes the article specified', () => {
         return request.delete('/api/articles/4').expect(204);
       });
-      it('DELETE 404 not found - client tried to delete nonexistent article', () => {
+      it('DELETE 404 not found - nonexistent article', () => {
         return request.delete('/api/articles/999').expect(404);
       });
     });
@@ -487,7 +480,7 @@ describe('NC news', () => {
             expect(comments[0].author).to.equal('butter_bridge');
           });
       });
-      it('GET 404 not found - client requested nonexistent article_id or specified an article with no comments', () => {
+      it('GET 404 not found - nonexistent article_id or article with no comments', () => {
         return request.get('/api/articles/111/comments').expect(404);
       });
       it('GET 200 response is limited to 10 comments DEFAULT CASE', () => {
@@ -604,13 +597,13 @@ describe('NC news', () => {
             expect(comment.body).to.equal('pugs are good');
           });
       });
-      it('POST 400 - client sent invalid comment data', () => {
+      it('POST 400 - invalid comment data', () => {
         return request
           .post('/api/articles/3/comments')
           .send({ pugs: 'butter_bridge', pigs: 'pugs are good' })
           .expect(400);
       });
-      it('POST 404 - client tried to comment on nonexistent article', () => {
+      it('POST 404 - nonexistent article', () => {
         return request
           .post('/api/articles/333/comments')
           .send({ body: 'butter_bridge', username: 'pugs are good' })
@@ -636,13 +629,13 @@ describe('NC news', () => {
             expect(comment.votes).to.equal(20);
           });
       });
-      it('PATCH 404 not found - client tried to vote on nonexistent comment', () => {
+      it('PATCH 404 not found - nonexistent comment', () => {
         return request
           .patch('/api/articles/1/comments/100')
           .send({ inc_votes: 1 })
           .expect(404);
       });
-      it('PATCH 404 not found - client tried to vote on comment for nonexistent article', () => {
+      it('PATCH 404 not found - existent comment, nonexistent article', () => {
         return request
           .patch('/api/articles/99/comments/7')
           .send({ inc_votes: 1 })
@@ -653,10 +646,10 @@ describe('NC news', () => {
       it('DELETE 204 no content deletes the comment', () => {
         return request.delete('/api/articles/1/comments/8').expect(204);
       });
-      it('DELETE 404 not found - client tried to delete nonexistent comment', () => {
+      it('DELETE 404 not found - nonexistent comment', () => {
         return request.delete('/api/articles/1/comments/444').expect(404);
       });
-      it('DELETE 404 not found - client tried to delete comment for nonexistent article', () => {
+      it('DELETE 404 not found - existent comment, nonexistent article', () => {
         return request.delete('/api/articles/999/comments/7').expect(404);
       });
     });
@@ -688,13 +681,13 @@ describe('NC news', () => {
             expect(user.avatar_url).to.equal('www.avatars.com/55');
           });
       });
-      it('POST 400 Bad Request - client sent invalid user data', () => {
+      it('POST 400 Bad Request - invalid user data', () => {
         return request
           .post('/api/users')
           .send({ size: 'big', nose: 'red' })
           .expect(400);
       });
-      it('POST 400 Bad Request - client sent duplicate user data', () => {
+      it('POST 400 Bad Request - duplicate user data', () => {
         return request
           .post('/api/users')
           .send({
@@ -715,7 +708,7 @@ describe('NC news', () => {
             expect(user).contains.keys('username', 'name', 'avatar_url');
           });
       });
-      it('GET / 404 not found - client requested nonexistent user', () => {
+      it('GET / 404 not found - nonexistent user', () => {
         return request.get('/api/users/toastedpancake44').expect(404);
       });
     });
@@ -759,7 +752,7 @@ describe('NC news', () => {
             expect(articles[0].comment_count).to.equal('13');
           });
       });
-      it('GET 404 Not Found - client requested articles for nonexistent user', () => {
+      it('GET 404 Not Found - nonexistent user', () => {
         return request.get('/api/users/butter_bench/articles').expect(404);
       });
       it('GET / 200 limits responses to 10 DEFAULT CASE', () => {
@@ -851,7 +844,7 @@ describe('NC news', () => {
             expect(articles[0].article_id).to.equal(7);
           });
       });
-      it("GET 404 Not Found - client requested page that doesn't exist", () => {
+      it("GET 404 Not Found - page that doesn't exist", () => {
         return request.get('/api/users/icellusedkars/articles?p=3').expect(404);
       });
     });
