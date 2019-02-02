@@ -14,7 +14,6 @@ exports.errorHandler = (err, req, res, next) => {
 };
 
 exports.invalidPathHandler = (req, res, next) => {
-  console.log('invalid path bro');
   res.status(404).send({
     status: 404,
     message:

@@ -21,7 +21,7 @@ describe('NC news', () => {
       return request.get('/').expect(404);
     });
     it('gives a 404 error for invalid paths', () => {
-      return request.get('/api/bad').expect(404);
+      return request.get('/bad').expect(404);
     });
   });
 
@@ -37,9 +37,6 @@ describe('NC news', () => {
             'GET /api/users/:username/articles'
           );
         });
-    });
-    it('gives a 404 error for invalid paths', () => {
-      return request.get('/api/bad').expect(404);
     });
   });
 
@@ -132,9 +129,9 @@ describe('NC news', () => {
           .get('/api/topics/mitch/articles')
           .expect(200)
           .then(({ body: { articles } }) => {
-            const articleDate = articles[0].created_at;
-            const article2Date = articles[1].created_at;
-            expect(articleDate > article2Date).to.be.true;
+            const articleYear = +articles[0].created_at.slice(0, 4);
+            const article2Year = +articles[1].created_at.slice(0, 4);
+            expect(articleYear).to.be.above(article2Year);
           });
       });
       it('GET /api/topics/:topic/articles 200 can be queried ?sort_by to sort by any column (DEFAULT descending)', () => {
@@ -150,9 +147,9 @@ describe('NC news', () => {
           .get('/api/topics/mitch/articles?order=asc')
           .expect(200)
           .then(({ body: { articles } }) => {
-            const articleDate = articles[0].created_at;
-            const article2Date = articles[1].created_at;
-            expect(articleDate < article2Date).to.be.true;
+            const articleDate = +articles[0].created_at.slice(0, 4);
+            const article2Date = +articles[1].created_at.slice(0, 4);
+            expect(articleDate).to.be.below(article2Date);
           });
       });
       it('GET /api/topics/:topic/articles 200 can be queried ?p to make 10-item pages DEFAULT CASE', () => {
@@ -302,9 +299,9 @@ describe('NC news', () => {
           .get('/api/articles')
           .expect(200)
           .then(({ body: { articles } }) => {
-            const article1Date = articles[0].created_at;
-            const article2Date = articles[1].created_at;
-            expect(article1Date > article2Date).to.be.true;
+            const article1Year = +articles[0].created_at.slice(0, 4);
+            const article2Year = +articles[1].created_at.slice(0, 4);
+            expect(article1Year).to.be.above(article2Year);
           });
       });
       it('GET / 200 can be queried ?sort_by to sort by any column (DEFAULT desc)', () => {
@@ -320,9 +317,9 @@ describe('NC news', () => {
           .get('/api/articles?order=asc')
           .expect(200)
           .then(({ body: { articles } }) => {
-            const article1Date = articles[0].created_at;
-            const article2Date = articles[1].created_at;
-            expect(article1Date < article2Date).to.be.true;
+            const article1Year = +articles[0].created_at.slice(0, 4);
+            const article2Year = +articles[1].created_at.slice(0, 4);
+            expect(article1Year).to.be.below(article2Year);
           });
       });
       it('GET / 200 can be queried ?p to create 10-item pages DEFAULT CASE', () => {
@@ -507,9 +504,9 @@ describe('NC news', () => {
           .get('/api/articles/1/comments?sort_ascending=true')
           .expect(200)
           .then(({ body: { comments } }) => {
-            const comment1Year = comments[0].created_at.slice(0, 4);
-            const comment10Year = comments[9].created_at.slice(0, 4);
-            expect(comment1Year < comment10Year).to.be.true;
+            const comment1Year = +comments[0].created_at.slice(0, 4);
+            const comment10Year = +comments[9].created_at.slice(0, 4);
+            expect(comment1Year).to.be.below(comment10Year);
           });
       });
       it('GET 200 can be queried ?p to use 10-item pagination DEFAULT CASE', () => {
