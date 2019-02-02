@@ -30,15 +30,9 @@ describe('NC news', () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.endpoints).contains.keys(
-            '/api/topics',
-            '/api/topics/:topic/articles',
-            '/api/articles',
-            '/api/articles/:article_id',
-            '/api/articles/:article_id/comments',
-            '/api/articles/:article_id/comments/:comment_id',
-            '/api/users',
-            '/api/users/:username',
-            '/api/users/:username/articles'
+            'GET /api/topics',
+            'POST /api/articles/:article_id/comments',
+            'GET /api/users/:username/articles'
           );
         });
     });
@@ -270,7 +264,8 @@ describe('NC news', () => {
               'body',
               'votes',
               'created_at',
-              'topic'
+              'topic',
+              'author'
             );
           });
       });
@@ -280,14 +275,6 @@ describe('NC news', () => {
           .expect(200)
           .then(({ body: { total_count } }) => {
             expect(total_count).to.equal('12');
-          });
-      });
-      it("GET / 200 responds with articles with author key = author's username", () => {
-        return request
-          .get('/api/articles')
-          .expect(200)
-          .then(({ body: { articles } }) => {
-            expect(articles[0]).contains.keys('author');
           });
       });
       it('GET / 200 responds with articles with comment_count property', () => {
@@ -327,10 +314,10 @@ describe('NC news', () => {
       });
       it('GET / 200 can be queried ?sort_by to sort by any column (DEFAULT desc)', () => {
         return request
-          .get('/api/articles?sort_by=title')
+          .get('/api/articles?sort_by=votes')
           .expect(200)
           .then(({ body: { articles } }) => {
-            expect(articles[0].title[0]).to.equal('Z');
+            expect(articles[0].votes).to.equal(100);
           });
       });
       it('GET / 200 can be queried ?order to sort ascending', () => {
@@ -458,6 +445,15 @@ describe('NC news', () => {
           .patch('/api/articles/999')
           .send({ inc_votes: 12 })
           .expect(404);
+      });
+      it('PATCH 200 no body - responds with unmodified article', () => {
+        return request
+          .patch('/api/articles/11')
+          .send()
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article.votes).to.equal(0);
+          });
       });
       it('DELETE 204 no content deletes the article specified', () => {
         return request.delete('/api/articles/4').expect(204);
@@ -630,6 +626,15 @@ describe('NC news', () => {
           .expect(200)
           .then(({ body: { comment } }) => {
             expect(comment.votes).to.equal(14);
+          });
+      });
+      it.only('PATCH 200 no body - responds with unmodified comment', () => {
+        return request
+          .patch('/api/articles/9/comments/17')
+          .send()
+          .expect(200)
+          .then(({ body: { comment } }) => {
+            expect(comment.votes).to.equal(20);
           });
       });
       it('PATCH 404 not found - client tried to vote on nonexistent comment', () => {

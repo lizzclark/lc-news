@@ -46,10 +46,15 @@ exports.addComment = (comment, article_id) => {
 };
 
 exports.voteOnComment = (comment_id, article_id, newVote) => {
+  if (newVote) {
+    return connection('comments')
+      .increment('votes', newVote)
+      .where({ comment_id, article_id })
+      .returning('*');
+  }
   return connection('comments')
-    .increment('votes', newVote)
-    .where({ comment_id, article_id })
-    .returning('*');
+    .select('*')
+    .where({ comment_id, article_id });
 };
 
 exports.strikeComment = (comment_id, article_id) => {

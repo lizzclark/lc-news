@@ -71,10 +71,13 @@ exports.fetchArticleById = ({ article_id }) => {
 };
 
 exports.updateVotes = ({ article_id }, newVote) => {
-  return connection('articles')
-    .where({ article_id })
-    .increment('votes', newVote)
-    .returning('*');
+  if (newVote) {
+    return connection('articles')
+      .where({ article_id })
+      .increment('votes', newVote)
+      .returning('*');
+  }
+  return connection('articles').where({ article_id });
 };
 
 exports.strikeArticle = article_id => {

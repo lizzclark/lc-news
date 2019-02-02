@@ -8,11 +8,12 @@ exports.seed = (connection, Promise) => {
     .then(() => connection.insert(userData).into('users'))
     .then(() => {
       const formattedArticles = articleData.map(
-        ({ title, topic, body, created_at, created_by }) => {
+        ({ title, topic, body, votes, created_at, created_by }) => {
           const newArticle = {
             title,
             topic,
             body,
+            votes,
             created_at: new Date(created_at),
             username: created_by,
           };
