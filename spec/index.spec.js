@@ -16,7 +16,7 @@ describe('NC news', () => {
 
   after(() => connection.destroy());
 
-  describe.only('/api', () => {
+  describe('/api', () => {
     it('responds with a JSON object of all the endpoints', () => {
       return request
         .get('/api')
@@ -221,8 +221,8 @@ describe('NC news', () => {
           })
           .expect(201)
           .then(({ body: { article } }) => {
-            expect(article).to.be.an('object');
             expect(article.title).to.equal('I like CATS');
+            expect(article.article_id).to.equal(13);
           });
       });
       it('POST 400 Bad Request - article in wrong format', () => {
@@ -251,15 +251,17 @@ describe('NC news', () => {
           .get('/api/articles')
           .expect(200)
           .then(({ body: { articles } }) => {
-            expect(articles[0]).contains.keys(
+            expect(articles[0]).to.have.all.keys(
               'article_id',
               'title',
               'body',
               'votes',
               'created_at',
               'topic',
-              'author'
+              'author',
+              'comment_count'
             );
+            expect(articles[0].comment_count).to.equal('13');
           });
       });
       it('GET / 200 responds with a total_count property = total number of articles', () => {
@@ -268,14 +270,6 @@ describe('NC news', () => {
           .expect(200)
           .then(({ body: { total_count } }) => {
             expect(total_count).to.equal('12');
-          });
-      });
-      it('GET / 200 responds with articles with comment_count property', () => {
-        return request
-          .get('/api/articles')
-          .expect(200)
-          .then(({ body: { articles } }) => {
-            expect(articles[0].comment_count).to.equal('13');
           });
       });
       it('GET / 200 limits to 10 responses DEFAULT CASE', () => {
@@ -389,26 +383,12 @@ describe('NC news', () => {
     describe('GET /articles/:article_id', () => {
       it('GET 200 responds with a single article object', () => {
         return request
-          .get('/api/articles/3')
+          .get('/api/articles/5')
           .expect(200)
           .then(({ body: { article } }) => {
-            expect(article.article_id).to.equal(3);
-          });
-      });
-      it('GET 200 responds with article that has an author key', () => {
-        return request
-          .get('/api/articles/3')
-          .expect(200)
-          .then(({ body: { article } }) => {
-            expect(article.author).to.equal('icellusedkars');
-          });
-      });
-      it('GET 200 responds with article that has a comment_count', () => {
-        return request
-          .get('/api/articles/1')
-          .expect(200)
-          .then(({ body: { article } }) => {
-            expect(article.comment_count).to.equal('13');
+            expect(article.article_id).to.equal(5);
+            expect(article.author).to.equal('rogersop');
+            expect(article.comment_count).to.equal('2');
           });
       });
       it('GET 404 not found - nonexistent article_id', () => {
@@ -464,19 +444,13 @@ describe('NC news', () => {
           .expect(200)
           .then(({ body: { comments } }) => {
             expect(comments).to.be.an('array');
-            expect(comments[0]).contains.keys(
+            expect(comments[0]).to.have.all.keys(
               'comment_id',
               'votes',
               'created_at',
-              'body'
+              'body',
+              'author'
             );
-          });
-      });
-      it('GET 200 comments contain an author property', () => {
-        return request
-          .get('/api/articles/1/comments')
-          .expect(200)
-          .then(({ body: { comments } }) => {
             expect(comments[0].author).to.equal('butter_bridge');
           });
       });
@@ -593,8 +567,8 @@ describe('NC news', () => {
           .send({ username: 'butter_bridge', body: 'pugs are good' })
           .expect(201)
           .then(({ body: { comment } }) => {
-            expect(comment).to.be.an('object');
             expect(comment.body).to.equal('pugs are good');
+            expect(comment.comment_id).to.equal(19);
           });
       });
       it('POST 400 - invalid comment data', () => {
@@ -663,7 +637,7 @@ describe('NC news', () => {
           .expect(200)
           .then(({ body: { users } }) => {
             expect(users).to.be.an('array');
-            expect(users[0]).contains.keys('username', 'avatar_url', 'name');
+            expect(users[0]).to.have.all.keys('username', 'avatar_url', 'name');
           });
       });
       it('POST 201 returns new user object', () => {
@@ -706,6 +680,7 @@ describe('NC news', () => {
           .expect(200)
           .then(({ body: { user } }) => {
             expect(user).contains.keys('username', 'name', 'avatar_url');
+            expect(user.username).to.equal('butter_bridge');
           });
       });
       it('GET / 404 not found - nonexistent user', () => {
