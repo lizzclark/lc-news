@@ -1,22 +1,10 @@
 const app = require('express')();
 const bodyParser = require('body-parser');
 const apiRouter = require('./routes/apiRouter');
+const { errorHandler } = require('./errors');
 
 app.use(bodyParser.json());
 app.use('/api', apiRouter);
-app.use((err, req, res, next) => {
-  console.log('you graced the error handler with your presence');
-  // 500 if this is an unhandled knex error
-  if (err.code) {
-    res
-      .status(500)
-      .send({ status: 500, message: 'sorry, something went wrong' });
-  } else {
-    // if this is an error defined by NC news, send it back with the relevant status
-    const { message, status } = err;
-    console.log(message);
-    res.status(status).send({ message });
-  }
-});
+app.use(errorHandler);
 
 module.exports = app;

@@ -282,8 +282,6 @@ describe('NC news', () => {
           .get('/api/articles')
           .expect(200)
           .then(({ body: { articles } }) => {
-            console.log(articles);
-            expect(articles[0]).contains.keys('comment_count');
             expect(articles[0].comment_count).to.equal('13');
           });
       });
