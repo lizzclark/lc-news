@@ -40,9 +40,16 @@ exports.fetchComments = (
 };
 
 exports.addComment = (comment, article_id) => {
-  return connection('comments')
-    .insert({ ...comment, article_id })
-    .returning('*');
+  const numbersRegex = /[0-9]/;
+  if (numbersRegex.test(article_id)) {
+    return connection('comments')
+      .insert({ ...comment, article_id })
+      .returning('*');
+  }
+  return Promise.reject({
+    status: 400,
+    message: 'invalid POST request, cannot add comment',
+  });
 };
 
 exports.voteOnComment = (comment_id, article_id, newVote) => {

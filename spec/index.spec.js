@@ -595,9 +595,28 @@ describe('NC news', () => {
       it('POST 404 - nonexistent article', () => {
         return request
           .post('/api/articles/333/comments')
-          .send({ body: 'butter_bridge', username: 'pugs are good' })
+          .send({ username: 'butter_bridge', body: 'pugs are good' })
           .expect(404);
       });
+      // it('POST 400 bad request - /articles/bad/comments/17 (invalid article_id)', () => {
+      //   return request
+      //     .post('/api/articles/bad/comments/17')
+      //     .send({
+      //       body:
+      //         "my mind's telling me no, but my body - my body is telling me yes",
+      //       username: 'butter_bridge',
+      //     })
+      //     .expect(400);
+      // });
+      // it('POST 400 bad request - /articles/1/comments/bad (invalid comment_id)', () => {
+      //   return request
+      //     .post('/api/articles/1/comments/bad')
+      //     .send({
+      //       body: 'i like to break the rules',
+      //       username: 'butter_bridge',
+      //     })
+      //     .expect(400);
+      // });
     });
     describe('PATCH /:comment_id', () => {
       it('PATCH 200 updates votes and responds with the updated comment', () => {
