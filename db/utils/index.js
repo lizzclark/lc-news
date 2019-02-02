@@ -10,4 +10,35 @@ const createRefObj = (list, key, value) => {
   }, {});
 };
 
-module.exports = { createRefObj };
+const formatArticles = articles => {
+  return articles.map(
+    ({ title, topic, body, votes, created_at, created_by }) => {
+      const newArticle = {
+        title,
+        topic,
+        body,
+        votes,
+        created_at: new Date(created_at),
+        username: created_by,
+      };
+      return newArticle;
+    }
+  );
+};
+
+const formatComments = (comments, articles) => {
+  const articleLookupInfo = createRefObj(articles, 'title', 'article_id');
+  return comments.map(({ body, votes, created_by, created_at, belongs_to }) => {
+    const newComment = {
+      body,
+      votes,
+      username: created_by,
+      created_at: new Date(created_at),
+      // look up the article that the comment belongs_to to get its ID
+      article_id: articleLookupInfo[belongs_to],
+    };
+    return newComment;
+  });
+};
+
+module.exports = { createRefObj, formatArticles, formatComments };

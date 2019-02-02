@@ -1,50 +1,20 @@
 const { topicData, userData, articleData, commentData } = require('../data');
-const { createRefObj } = require('../utils/index');
+const { formatArticles, formatComments } = require('../utils/index');
 
 exports.seed = (connection, Promise) => {
-  return connection
-    .insert(topicData)
-    .into('topics')
-    .then(() => connection.insert(userData).into('users'))
+  return Promise.all([
+    connection.insert(topicData).into('topics'),
+    connection.insert(userData).into('users'),
+  ])
     .then(() => {
-      const formattedArticles = articleData.map(
-        ({ title, topic, body, votes, created_at, created_by }) => {
-          const newArticle = {
-            title,
-            topic,
-            body,
-            votes,
-            created_at: new Date(created_at),
-            username: created_by,
-          };
-          return newArticle;
-        }
-      );
+      const formattedArticles = formatArticles(articleData);
       return connection
         .insert(formattedArticles)
         .into('articles')
         .returning('*');
     })
     .then(articleRows => {
-      // create a reference object of articles with their title and ID
-      const articleLookupInfo = createRefObj(
-        articleRows,
-        'title',
-        'article_id'
-      );
-      const formattedComments = commentData.map(
-        ({ body, votes, created_by, created_at, belongs_to }) => {
-          const newComment = {
-            body,
-            votes,
-            username: created_by,
-            created_at: new Date(created_at),
-            // look up the article that the comment belongs_to to get its ID
-            article_id: articleLookupInfo[belongs_to],
-          };
-          return newComment;
-        }
-      );
+      const formattedComments = formatComments(commentData, articleRows);
       return connection.insert(formattedComments).into('comments');
     });
 };

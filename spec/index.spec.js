@@ -50,7 +50,7 @@ describe('NC news', () => {
           .send({ slug: 'frogs', description: 'our green friends' })
           .expect(201)
           .then(({ body: { topic } }) => {
-            expect(topic[0]).contains.keys('slug', 'description');
+            expect(topic).contains.keys('slug', 'description');
           });
       });
       it('POST 400 Bad Request - invalid topic data', () => {

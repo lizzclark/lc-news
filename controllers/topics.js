@@ -12,7 +12,7 @@ const getTopics = function(req, res, next) {
 const postTopic = function(req, res, next) {
   const newTopic = req.body;
   addTopic(newTopic)
-    .then(topic => {
+    .then(([topic]) => {
       res.status(201).send({ topic });
     })
     .catch(err => {
