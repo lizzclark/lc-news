@@ -43,7 +43,7 @@ exports.fetchArticles = (
       )
       .count('comments.comment_id as comment_count')
       .from('articles')
-      .leftJoin('comments', 'comments.username', 'articles.username')
+      .leftJoin('comments', 'comments.article_id', 'articles.article_id')
       .groupBy('articles.article_id')
       .limit(limit)
       .orderBy(sort_by, order)

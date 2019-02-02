@@ -282,8 +282,9 @@ describe('NC news', () => {
           .get('/api/articles')
           .expect(200)
           .then(({ body: { articles } }) => {
+            console.log(articles);
             expect(articles[0]).contains.keys('comment_count');
-            expect(articles[2].comment_count).to.equal('13');
+            expect(articles[0].comment_count).to.equal('13');
           });
       });
       it('GET / 200 limits to 10 responses DEFAULT CASE', () => {
@@ -628,7 +629,7 @@ describe('NC news', () => {
             expect(comment.votes).to.equal(14);
           });
       });
-      it.only('PATCH 200 no body - responds with unmodified comment', () => {
+      it('PATCH 200 no body - responds with unmodified comment', () => {
         return request
           .patch('/api/articles/9/comments/17')
           .send()
