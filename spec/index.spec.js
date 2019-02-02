@@ -16,7 +16,7 @@ describe('NC news', () => {
 
   after(() => connection.destroy());
 
-  describe('/', () => {
+  describe.only('/', () => {
     it('gives a 404 error on GET /', () => {
       return request.get('/').expect(404);
     });
@@ -26,7 +26,7 @@ describe('NC news', () => {
   });
 
   describe('/api', () => {
-    it('responds with a JSON object of all the endpoints', () => {
+    it('GET / responds with a JSON object of all the endpoints', () => {
       return request
         .get('/api')
         .expect(200)
@@ -37,6 +37,9 @@ describe('NC news', () => {
             'GET /api/users/:username/articles'
           );
         });
+    });
+    it('PATCH / 405 invalid method', () => {
+      return request.patch('/api').expect(405);
     });
   });
 
