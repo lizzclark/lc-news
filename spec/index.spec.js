@@ -16,6 +16,15 @@ describe('NC news', () => {
 
   after(() => connection.destroy());
 
+  describe('/', () => {
+    it('gives a 404 error on GET /', () => {
+      return request.get('/').expect(404);
+    });
+    it('gives a 404 error for invalid paths', () => {
+      return request.get('/api/bad').expect(404);
+    });
+  });
+
   describe('/api', () => {
     it('responds with a JSON object of all the endpoints', () => {
       return request
@@ -30,7 +39,7 @@ describe('NC news', () => {
         });
     });
     it('gives a 404 error for invalid paths', () => {
-      return request.get('/bad').expect(404);
+      return request.get('/api/bad').expect(404);
     });
   });
 

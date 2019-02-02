@@ -12,3 +12,12 @@ exports.errorHandler = (err, req, res, next) => {
     res.status(status).send({ message });
   }
 };
+
+exports.invalidPathHandler = (req, res, next) => {
+  console.log('invalid path bro');
+  res.status(404).send({
+    status: 404,
+    message:
+      'Invalid path - no such endpoint. GET /api for a list of valid endpoints and descriptions',
+  });
+};
