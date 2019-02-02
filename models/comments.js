@@ -46,15 +46,21 @@ exports.addComment = (comment, article_id) => {
 };
 
 exports.voteOnComment = (comment_id, article_id, newVote) => {
-  if (newVote) {
+  if (typeof newVote === 'number') {
     return connection('comments')
       .increment('votes', newVote)
       .where({ comment_id, article_id })
       .returning('*');
   }
-  return connection('comments')
-    .select('*')
-    .where({ comment_id, article_id });
+  if (!newVote) {
+    return connection('comments')
+      .select('*')
+      .where({ comment_id, article_id });
+  }
+  return Promise.reject({
+    status: 400,
+    message: 'bad request - invalid request body',
+  });
 };
 
 exports.strikeComment = (comment_id, article_id) => {

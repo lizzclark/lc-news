@@ -433,6 +433,12 @@ describe('NC news', () => {
             expect(article.votes).to.equal(0);
           });
       });
+      it('PATCH 400 Bad Request - invalid body, wrong data type', () => {
+        return request
+          .patch('/api/articles/11')
+          .send({ inc_votes: 'bananas' })
+          .expect(400);
+      });
       it('DELETE 204 no content deletes the article specified', () => {
         return request.delete('/api/articles/4').expect(204);
       });
@@ -608,6 +614,12 @@ describe('NC news', () => {
           .then(({ body: { comment } }) => {
             expect(comment.votes).to.equal(20);
           });
+      });
+      it('PATCH 400 bad request - invalid request body, wrong data type', () => {
+        return request
+          .patch('/api/articles/9/comments/17')
+          .send({ inc_votes: 'lots and lots' })
+          .expect(400);
       });
       it('PATCH 404 not found - nonexistent comment', () => {
         return request

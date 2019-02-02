@@ -71,12 +71,18 @@ exports.fetchArticleById = ({ article_id }) => {
 };
 
 exports.updateVotes = ({ article_id }, newVote) => {
-  if (newVote) {
+  // validate inc_votes property
+  if (newVote && typeof newVote === 'number') {
     return connection('articles')
       .where({ article_id })
       .increment('votes', newVote)
       .returning('*');
   }
+  // request body provided, but invalid inc_votes data
+  if (newVote) {
+    return Promise.reject({ status: 400, message: 'no new vote provided' });
+  }
+  // no request body - return unmodified article
   return connection('articles').where({ article_id });
 };
 
