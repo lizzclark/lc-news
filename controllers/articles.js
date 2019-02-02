@@ -24,14 +24,17 @@ const getArticleById = function(req, res, next) {
     .then(([article]) => {
       if (article) res.status(200).send({ article });
       else {
-        console.log(article);
         return Promise.reject({
           status: 404,
           message: 'no such article to get',
         });
       }
     })
-    .catch(next);
+    .catch(err => {
+      if (err.code === '22P02') {
+        next({ status: 400, message: 'invalid article_id' });
+      } else next(err);
+    });
 };
 
 const patchVote = function(req, res, next) {
