@@ -25,16 +25,16 @@ exports.fetchArticlesByTopic = (
   if (Number.isNaN(+limit)) limit = 10;
 
   // validate sort_by
-  const columnNames = {
-    author: 'string',
-    title: 'string',
-    article_id: 'number',
-    votes: 'number',
-    comment_count: 'number',
-    created_at: 'date',
-    topic: 'string',
-  };
-  if (!columnNames[sort_by]) sort_by = 'created_at';
+  const validColumns = [
+    'title',
+    'author',
+    'article_id',
+    'votes',
+    'comment_count',
+    'created_at',
+    'topic',
+  ];
+  if (!validColumns.includes(sort_by)) sort_by = 'created_at';
 
   // validate sort order query
   if (order !== 'asc' && order !== 'desc') order = 'desc';

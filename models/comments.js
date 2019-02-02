@@ -20,15 +20,15 @@ exports.fetchComments = (
   if (Number.isNaN(+limit)) limit = 10;
 
   // validate sort_by
-  const validColumns = {
-    comment_id: 'number',
-    username: 'string',
-    article_id: 'number',
-    votes: 'number',
-    created_at: 'date',
-    body: 'string',
-  };
-  if (!validColumns[sort_by]) sort_by = 'created_at';
+  const validColumns = [
+    'comment_id',
+    'username',
+    'article_id',
+    'votes',
+    'created_at',
+    'body',
+  ];
+  if (!validColumns.includes(sort_by)) sort_by = 'created_at';
 
   return connection
     .select('comment_id', 'votes', 'created_at', 'username as author', 'body')

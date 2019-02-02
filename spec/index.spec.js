@@ -16,7 +16,7 @@ describe('NC news', () => {
 
   after(() => connection.destroy());
 
-  describe.only('/', () => {
+  describe('/', () => {
     it('gives a 404 error on GET /', () => {
       return request.get('/').expect(404);
     });
