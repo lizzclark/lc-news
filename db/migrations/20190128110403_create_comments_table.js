@@ -5,10 +5,11 @@ exports.up = function(connection, Promise) {
       .string('username')
       .references('users.username')
       .notNullable();
+    commentsTable.integer('article_id');
     commentsTable
-      .integer('article_id')
+      .foreign('article_id')
       .references('articles.article_id')
-      .notNullable();
+      .onDelete('cascade');
     commentsTable.integer('votes').defaultTo(0);
     commentsTable.text('body').notNullable();
     commentsTable.timestamp('created_at', true).defaultTo(connection.fn.now());
