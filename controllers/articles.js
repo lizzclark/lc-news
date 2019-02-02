@@ -24,6 +24,7 @@ const getArticleById = function(req, res, next) {
     .then(([article]) => {
       if (article) res.status(200).send({ article });
       else {
+        console.log(article);
         return Promise.reject({
           status: 404,
           message: 'no such article to get',

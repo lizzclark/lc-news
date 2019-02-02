@@ -386,7 +386,7 @@ describe('NC news', () => {
           });
       });
     });
-    describe('GET /articles/:article_id', () => {
+    describe.only('GET /articles/:article_id', () => {
       it('GET 200 responds with a single article object', () => {
         return request
           .get('/api/articles/5')
@@ -399,6 +399,9 @@ describe('NC news', () => {
       });
       it('GET 404 not found - nonexistent article_id', () => {
         return request.get('/api/articles/99').expect(404);
+      });
+      it('GET 400 Bad Request - invalid article_id', () => {
+        return request.get('/api/articles/my-article').expect(400);
       });
       it('PATCH 200 updates votes for article and responds with updated article', () => {
         return request
