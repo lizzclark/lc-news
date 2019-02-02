@@ -386,7 +386,7 @@ describe('NC news', () => {
           });
       });
     });
-    describe.only('GET /articles/:article_id', () => {
+    describe('GET /articles/:article_id', () => {
       it('GET 200 responds with a single article object', () => {
         return request
           .get('/api/articles/5')
@@ -622,6 +622,18 @@ describe('NC news', () => {
         return request
           .patch('/api/articles/9/comments/17')
           .send({ inc_votes: 'lots and lots' })
+          .expect(400);
+      });
+      it('PATCH 400 bad request - /articles/bad/comments/17 (invalid article_id)', () => {
+        return request
+          .patch('/api/articles/bad/comments/17')
+          .send({ inc_votes: 5 })
+          .expect(400);
+      });
+      it('PATCH 400 bad request - /articles/1/comments/bad (invalid comment_id)', () => {
+        return request
+          .patch('/api/articles/1/comments/bad')
+          .send({ inc_votes: 5 })
           .expect(400);
       });
       it('PATCH 404 not found - nonexistent comment', () => {

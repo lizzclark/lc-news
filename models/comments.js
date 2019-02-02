@@ -46,20 +46,27 @@ exports.addComment = (comment, article_id) => {
 };
 
 exports.voteOnComment = (comment_id, article_id, newVote) => {
-  if (typeof newVote === 'number') {
+  const numbersRegex = /[0-9]/;
+  if (
+    numbersRegex.test(comment_id) &&
+    numbersRegex.test(article_id) &&
+    numbersRegex.test(newVote)
+  ) {
     return connection('comments')
       .increment('votes', newVote)
       .where({ comment_id, article_id })
       .returning('*');
   }
+  // empty request body - newVote is undefined
   if (!newVote) {
     return connection('comments')
       .select('*')
       .where({ comment_id, article_id });
   }
+  // invalid article_id, comment_id or newVote value
   return Promise.reject({
     status: 400,
-    message: 'bad request - invalid request body',
+    message: 'bad request, cannot PATCH comment',
   });
 };
 

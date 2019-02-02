@@ -47,6 +47,7 @@ const patchComment = function(
     .then(([comment]) => {
       if (comment) res.status(200).send({ comment });
       else {
+        // no such comment - knex responds with an empty array
         return Promise.reject({
           status: 404,
           message: 'no such comment to patch',
