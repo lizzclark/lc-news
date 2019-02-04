@@ -586,9 +586,9 @@ describe('NC news', () => {
             expect(comments[9].created_at.slice(0, 4)).to.equal('2007');
           });
       });
-      it('?sort_ascending - can only be true or false, defaults to false', () => {
+      it('?order - can only be asc or desc', () => {
         return request
-          .get('/api/articles/1/comments?sort_ascending=bunnies')
+          .get('/api/articles/1/comments?order=bunnies')
           .expect(200)
           .then(({ body: { comments } }) => {
             expect(comments[0].created_at.slice(0, 4)).to.equal('2016');
@@ -640,7 +640,7 @@ describe('NC news', () => {
           .expect(400);
       });
     });
-    describe('/:comment_id', () => {
+    describe.only('/:comment_id', () => {
       it('PATCH 200 updates votes and responds with the updated comment', () => {
         return request
           .patch('/api/articles/1/comments/7')
@@ -648,6 +648,15 @@ describe('NC news', () => {
           .expect(200)
           .then(({ body: { comment } }) => {
             expect(comment.votes).to.equal(14);
+          });
+      });
+      it('PATCH 200 works for downvotes too', () => {
+        return request
+          .patch('/api/articles/1/comments/7')
+          .send({ inc_votes: -14 })
+          .expect(200)
+          .then(({ body: { comment } }) => {
+            expect(comment.votes).to.equal(-14);
           });
       });
       it('PATCH 200 no body - responds with unmodified comment', () => {

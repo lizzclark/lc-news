@@ -37,7 +37,7 @@ exports.fetchComments = (
 };
 
 exports.addComment = (comment, article_id) => {
-  const numbersRegex = /[0-9]/;
+  const numbersRegex = /^[0-9]+$/;
   if (numbersRegex.test(article_id)) {
     return connection('comments')
       .insert({ ...comment, article_id })
@@ -50,11 +50,12 @@ exports.addComment = (comment, article_id) => {
 };
 
 exports.voteOnComment = (comment_id, article_id, newVote) => {
-  const numbersRegex = /[0-9]/;
+  const numbersRegex = /^[0-9]+$/;
+  const posOrNegNum = /^-?[0-9]+$/;
   if (
     numbersRegex.test(comment_id) &&
     numbersRegex.test(article_id) &&
-    numbersRegex.test(newVote)
+    posOrNegNum.test(newVote)
   ) {
     return connection('comments')
       .increment('votes', newVote)

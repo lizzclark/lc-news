@@ -72,7 +72,8 @@ exports.fetchArticleById = ({ article_id }) => {
 
 exports.updateVotes = ({ article_id }, newVote) => {
   // validate inc_votes property
-  if (newVote && typeof newVote === 'number') {
+  const posOrNegNum = /^-?[0-9]+$/;
+  if (newVote && posOrNegNum.test(newVote)) {
     return connection('articles')
       .where({ article_id })
       .increment('votes', newVote)
