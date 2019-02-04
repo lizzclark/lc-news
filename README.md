@@ -10,33 +10,16 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+Node.js
+PSQL
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
+Running the command `npm install` from the root directory of the project will install all the necessary dependencies.
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+To run the tests, use the command `npm test`
 
 ## Deployment
 
@@ -44,12 +27,12 @@ Add additional notes about how to deploy this on a live system
 
 ## Built by
 
+Lizz Clark - github.com/lizzclark
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+?
 
 ## Acknowledgments
 
-- Hat tip to anyone whose code was used
-- Inspiration
-- etc
+This project was completed as part of the Northcoders Developer Pathway. Thanks to the tutors at Northcoders for their support and feedback throughout!
