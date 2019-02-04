@@ -32,9 +32,9 @@ describe('NC news', () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.endpoints).contains.keys(
-            'GET /api/topics',
-            'POST /api/articles/:article_id/comments',
-            'GET /api/users/:username/articles'
+            '/api/topics',
+            '/api/articles/:article_id/comments',
+            '/api/users/:username/articles'
           );
         });
     });
