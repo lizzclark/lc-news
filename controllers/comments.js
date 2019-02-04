@@ -18,7 +18,6 @@ const getCommentsByArticle = function(req, res, next) {
 };
 
 const postComment = function(req, res, next) {
-  console.log(req.params, 'this is req.params');
   const { article_id } = req.params;
   addComment(req.body, article_id)
     .then(([comment]) => {
@@ -34,6 +33,7 @@ const postComment = function(req, res, next) {
       if (err.code === '42703') {
         next({ status: 400, message: 'invalid comment data' });
       }
+      next(err);
     });
 };
 

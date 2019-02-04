@@ -511,9 +511,9 @@ describe('NC news', () => {
             );
           });
       });
-      it('GET 200 can be queried ?sort_ascending with a boolean to change sort order', () => {
+      it("GET 200 can be queried ?order with 'asc' to change sort order", () => {
         return request
-          .get('/api/articles/1/comments?sort_ascending=true')
+          .get('/api/articles/1/comments?order=asc')
           .expect(200)
           .then(({ body: { comments } }) => {
             const comment1Year = +comments[0].created_at.slice(0, 4);
@@ -578,7 +578,7 @@ describe('NC news', () => {
       });
     });
 
-    describe('POST /', () => {
+    describe.only('POST /', () => {
       it('POST 201 responds with the posted comment', () => {
         return request
           .post('/api/articles/3/comments')
@@ -601,25 +601,16 @@ describe('NC news', () => {
           .send({ username: 'butter_bridge', body: 'pugs are good' })
           .expect(404);
       });
-      // it('POST 400 bad request - /articles/bad/comments/17 (invalid article_id)', () => {
-      //   return request
-      //     .post('/api/articles/bad/comments/17')
-      //     .send({
-      //       body:
-      //         "my mind's telling me no, but my body - my body is telling me yes",
-      //       username: 'butter_bridge',
-      //     })
-      //     .expect(400);
-      // });
-      // it('POST 400 bad request - /articles/1/comments/bad (invalid comment_id)', () => {
-      //   return request
-      //     .post('/api/articles/1/comments/bad')
-      //     .send({
-      //       body: 'i like to break the rules',
-      //       username: 'butter_bridge',
-      //     })
-      //     .expect(400);
-      // });
+      it('POST 400 bad request - /articles/bad/comments (invalid article_id)', () => {
+        return request
+          .post('/api/articles/bad/comments')
+          .send({
+            body:
+              "my mind's telling me no, but my body - my body is telling me yes",
+            username: 'butter_bridge',
+          })
+          .expect(400);
+      });
     });
     describe('PATCH /:comment_id', () => {
       it('PATCH 200 updates votes and responds with the updated comment', () => {

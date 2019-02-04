@@ -2,13 +2,10 @@ const connection = require('../db/connection');
 
 exports.fetchComments = (
   article_id,
-  { limit = 10, sort_by = 'created_at', sort_ascending = false, p = 1 }
+  { limit = 10, sort_by = 'created_at', order = 'desc', p = 1 }
 ) => {
-  // validate sort_ascending, determine sort order
-  let sortOrder = 'desc';
-  if (sort_ascending === 'true') {
-    sortOrder = 'asc';
-  }
+  // validate order
+  if (order !== 'desc' && order !== 'asc') order = 'desc';
 
   // pagination
   let offset = 0;
@@ -35,7 +32,7 @@ exports.fetchComments = (
     .from('comments')
     .where({ article_id })
     .limit(limit)
-    .orderBy(sort_by, sortOrder)
+    .orderBy(sort_by, order)
     .offset(offset);
 };
 
@@ -48,7 +45,7 @@ exports.addComment = (comment, article_id) => {
   }
   return Promise.reject({
     status: 400,
-    message: 'invalid POST request, cannot add comment',
+    message: 'invalid article_id, cannot POST comment',
   });
 };
 
