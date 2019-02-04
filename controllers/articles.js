@@ -6,8 +6,7 @@ const {
 } = require('../models/articles');
 
 const getArticles = function(req, res, next) {
-  const { limit, sort_by, order, p } = req.query;
-  fetchArticles(limit, sort_by, order, p)
+  fetchArticles(req.query)
     .then(([articles, countInfo]) => {
       if (articles.length !== 0) {
         const { total_count } = countInfo[0];
@@ -38,8 +37,7 @@ const getArticleById = function(req, res, next) {
 };
 
 const patchVote = function(req, res, next) {
-  const newVote = req.body.inc_votes;
-  updateVotes(req.params, newVote)
+  updateVotes(req.params, req.body)
     .then(([article]) => {
       if (article) res.status(200).send({ article });
       else {
@@ -53,7 +51,7 @@ const patchVote = function(req, res, next) {
 };
 
 const deleteArticle = function(req, res, next) {
-  strikeArticle(req.params.article_id)
+  strikeArticle(req.params)
     .then(rowDeleted => {
       if (rowDeleted) {
         res.status(204).send();

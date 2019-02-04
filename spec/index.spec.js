@@ -177,8 +177,6 @@ describe('NC news', () => {
             expect(articles[0].article_id).to.equal(9);
           });
       });
-    });
-    describe('GET /api/topics/:topic/articles WEIRD QUERIES', () => {
       it('?limit greater than number of articles - just brings back all articles', () => {
         return request
           .get('/api/topics/mitch/articles?limit=500')
@@ -469,6 +467,15 @@ describe('NC news', () => {
           .send({ inc_votes: 'bananas' })
           .expect(400);
       });
+      it('PATCH 200 missing inc_votes property', () => {
+        return request
+          .patch('/api/articles/11')
+          .send({ fav_food: 'bananas' })
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article.votes).to.equal(0);
+          });
+      });
       it('DELETE 204 no content deletes the article specified', () => {
         return request.delete('/api/articles/4').expect(204);
       });
@@ -640,7 +647,7 @@ describe('NC news', () => {
           .expect(400);
       });
     });
-    describe.only('/:comment_id', () => {
+    describe('/:comment_id', () => {
       it('PATCH 200 updates votes and responds with the updated comment', () => {
         return request
           .patch('/api/articles/1/comments/7')
@@ -673,6 +680,15 @@ describe('NC news', () => {
           .patch('/api/articles/9/comments/17')
           .send({ inc_votes: 'lots and lots' })
           .expect(400);
+      });
+      it('PATCH 200 missing inc_votes property - responds with unmodified comment', () => {
+        return request
+          .patch('/api/articles/9/comments/17')
+          .send({ number_of_votes: 'lots and lots' })
+          .expect(200)
+          .then(({ body: { comment } }) => {
+            expect(comment.votes).to.equal(20);
+          });
       });
       it('PATCH 400 bad request - /articles/bad/comments/17 (invalid article_id)', () => {
         return request

@@ -1,11 +1,11 @@
 const connection = require('../db/connection');
 
-exports.fetchArticles = (
+exports.fetchArticles = ({
   limit = 10,
   sort_by = 'created_at',
   order = 'desc',
-  p = 1
-) => {
+  p = 1,
+}) => {
   // pagination
   let offset = 0;
   if (p > 1) {
@@ -70,24 +70,26 @@ exports.fetchArticleById = ({ article_id }) => {
     .where({ 'articles.article_id': article_id });
 };
 
-exports.updateVotes = ({ article_id }, newVote) => {
-  // validate inc_votes property
+exports.updateVotes = ({ article_id }, { inc_votes = 0 }) => {
+  // empty request body or no inc_votes property - return unmodified article
+  if (inc_votes === 0) {
+    return connection('articles').where({ article_id });
+  }
+  // check inc_votes is a number
   const posOrNegNum = /^-?[0-9]+$/;
-  if (newVote && posOrNegNum.test(newVote)) {
+  if (posOrNegNum.test(inc_votes)) {
     return connection('articles')
       .where({ article_id })
-      .increment('votes', newVote)
+      .increment('votes', inc_votes)
       .returning('*');
   }
-  // request body provided, but invalid inc_votes data
-  if (newVote) {
-    return Promise.reject({ status: 400, message: 'no new vote provided' });
-  }
-  // no request body - return unmodified article
-  return connection('articles').where({ article_id });
+  return Promise.reject({
+    status: 400,
+    message: 'bad request - inc_votes must be a number',
+  });
 };
 
-exports.strikeArticle = article_id => {
+exports.strikeArticle = ({ article_id }) => {
   return connection('articles')
     .where({ article_id })
     .del();

@@ -12,8 +12,8 @@ exports.addTopic = newTopic => {
 };
 
 exports.fetchArticlesByTopic = (
-  { limit = 10, sort_by = 'created_at', order = 'desc', p = 1 },
-  { topic }
+  { topic },
+  { limit = 10, sort_by = 'created_at', order = 'desc', p = 1 }
 ) => {
   // pagination
   let offset = 0;
@@ -66,7 +66,8 @@ exports.fetchArticlesByTopic = (
   ]);
 };
 
-exports.addArticle = article => {
+exports.addArticle = ({ topic }, { title, username, body }) => {
+  const article = { title, username, body, topic };
   return connection
     .insert(article)
     .into('articles')

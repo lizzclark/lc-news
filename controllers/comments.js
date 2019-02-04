@@ -6,8 +6,7 @@ const {
 } = require('../models/comments');
 
 const getCommentsByArticle = function(req, res, next) {
-  const { article_id } = req.params;
-  fetchComments(article_id, req.query)
+  fetchComments(req.params, req.query)
     .then(comments => {
       if (comments.length !== 0) res.status(200).send({ comments });
       else {
@@ -18,8 +17,7 @@ const getCommentsByArticle = function(req, res, next) {
 };
 
 const postComment = function(req, res, next) {
-  const { article_id } = req.params;
-  addComment(req.body, article_id)
+  addComment(req.body, req.params)
     .then(([comment]) => {
       return res.status(201).send({ comment });
     })
@@ -37,13 +35,8 @@ const postComment = function(req, res, next) {
     });
 };
 
-const patchComment = function(
-  { params: { comment_id, article_id }, body },
-  res,
-  next
-) {
-  const newVote = body.inc_votes;
-  voteOnComment(comment_id, article_id, newVote)
+const patchComment = function(req, res, next) {
+  voteOnComment(req.params, req.body)
     .then(([comment]) => {
       if (comment) res.status(200).send({ comment });
       else {
@@ -54,15 +47,19 @@ const patchComment = function(
         });
       }
     })
-    .catch(next);
+    .catch(err => {
+      if (err.code === '22P02') {
+        next({
+          status: 400,
+          message: 'comment_id and/or article_id not found',
+        });
+      }
+      next(err);
+    });
 };
 
-const deleteComment = function(
-  { params: { comment_id, article_id } },
-  res,
-  next
-) {
-  strikeComment(comment_id, article_id)
+const deleteComment = function(req, res, next) {
+  strikeComment(req.params)
     .then(rowDeleted => {
       if (rowDeleted) res.status(204).send();
       else {

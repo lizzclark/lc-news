@@ -1,7 +1,7 @@
 const connection = require('../db/connection');
 
 exports.fetchComments = (
-  article_id,
+  { article_id },
   { limit = 10, sort_by = 'created_at', order = 'desc', p = 1 }
 ) => {
   // validate order
@@ -36,7 +36,7 @@ exports.fetchComments = (
     .offset(offset);
 };
 
-exports.addComment = (comment, article_id) => {
+exports.addComment = (comment, { article_id }) => {
   const numbersRegex = /^[0-9]+$/;
   if (numbersRegex.test(article_id)) {
     return connection('comments')
@@ -49,33 +49,28 @@ exports.addComment = (comment, article_id) => {
   });
 };
 
-exports.voteOnComment = (comment_id, article_id, newVote) => {
-  const numbersRegex = /^[0-9]+$/;
+exports.voteOnComment = ({ comment_id, article_id }, { inc_votes = 0 }) => {
   const posOrNegNum = /^-?[0-9]+$/;
-  if (
-    numbersRegex.test(comment_id) &&
-    numbersRegex.test(article_id) &&
-    posOrNegNum.test(newVote)
-  ) {
+  if (posOrNegNum.test(inc_votes)) {
     return connection('comments')
-      .increment('votes', newVote)
+      .increment('votes', inc_votes)
       .where({ comment_id, article_id })
       .returning('*');
   }
-  // empty request body - newVote is undefined
-  if (!newVote) {
+  // empty request body or no inc_votes value
+  if (inc_votes === 0) {
     return connection('comments')
       .select('*')
       .where({ comment_id, article_id });
   }
-  // invalid article_id, comment_id or newVote value
+  // invalid inc_votes value
   return Promise.reject({
     status: 400,
-    message: 'bad request, cannot PATCH comment',
+    message: 'bad request, inc_votes must be a number',
   });
 };
 
-exports.strikeComment = (comment_id, article_id) => {
+exports.strikeComment = ({ comment_id, article_id }) => {
   return connection('comments')
     .where({ comment_id, article_id })
     .del();

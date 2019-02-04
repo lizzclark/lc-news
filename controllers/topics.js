@@ -12,8 +12,7 @@ const getTopics = function(req, res, next) {
 };
 
 const postTopic = function(req, res, next) {
-  const newTopic = req.body;
-  addTopic(newTopic)
+  addTopic(req.body)
     .then(([topic]) => {
       res.status(201).send({ topic });
     })
@@ -26,7 +25,7 @@ const postTopic = function(req, res, next) {
 };
 
 const getArticlesByTopic = function(req, res, next) {
-  fetchArticlesByTopic(req.query, req.params)
+  fetchArticlesByTopic(req.params, req.query)
     .then(([articles, countData]) => {
       if (articles.length !== 0) {
         const { total_count } = countData[0];
@@ -39,10 +38,7 @@ const getArticlesByTopic = function(req, res, next) {
 };
 
 const postArticleInTopic = function(req, res, next) {
-  const { topic } = req.params;
-  const { title, username, body } = req.body;
-  const newArticle = { topic, title, username, body };
-  addArticle(newArticle)
+  addArticle(req.params, req.body)
     .then(([article]) => {
       res.status(201).send({ article });
     })
