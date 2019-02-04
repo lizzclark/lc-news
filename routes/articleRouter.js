@@ -5,19 +5,17 @@ const {
   patchVote,
   deleteArticle,
 } = require('../controllers/articles');
-const {
-  getCommentsByArticle,
-  postComment,
-} = require('../controllers/comments');
+const { handle405 } = require('../errors');
 const commentRouter = require('./commentRouter');
 
-articleRouter.get('/', getArticles);
+articleRouter.get('/', getArticles).all('/', handle405);
 
 articleRouter
   .route('/:article_id')
   .get(getArticleById)
   .patch(patchVote)
-  .delete(deleteArticle);
+  .delete(deleteArticle)
+  .all(handle405);
 
 articleRouter.use('/:article_id/comments', commentRouter);
 

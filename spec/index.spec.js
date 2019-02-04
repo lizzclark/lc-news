@@ -74,6 +74,12 @@ describe('NC news', () => {
           .send({ slug: 'mitch', description: 'man with cable knit jumper' })
           .expect(400);
       });
+      it('PATCH / 405 invalid method', () => {
+        return request
+          .patch('/api/topics')
+          .send({ message: 'can I patch this?' })
+          .expect(405);
+      });
     });
     describe('GET /api/topics/:topic/articles', () => {
       it('GET /api/topics/:topic/articles 200 responds with articles for that topic', () => {
@@ -251,10 +257,18 @@ describe('NC news', () => {
           .expect(404);
       });
     });
+    describe('/api/topics/:topic/articles - invalid method', () => {
+      it('PATCH /api/topics/:topic/articles 405 invalid method', () => {
+        return request
+          .patch('/api/topics/mitch/articles')
+          .send({ message: 'can I patch this?' })
+          .expect(405);
+      });
+    });
   });
 
   describe('/api/articles', () => {
-    describe('GET /', () => {
+    describe('/', () => {
       it('GET / 200 responds with an array of articles', () => {
         return request
           .get('/api/articles')
@@ -341,8 +355,6 @@ describe('NC news', () => {
             expect(articles[0].article_id).to.equal(6);
           });
       });
-    });
-    describe('GET /api/articles WEIRD QUERIES', () => {
       it('?limit greater than number of articles - just brings back all articles', () => {
         return request
           .get('/api/articles?limit=500')
@@ -388,8 +400,14 @@ describe('NC news', () => {
             expect(articles[0].article_id).to.equal(1);
           });
       });
+      it('PATCH /api/articles 405 invalid method', () => {
+        return request
+          .patch('/api/articles')
+          .send({ message: 'can I patch this?' })
+          .expect(405);
+      });
     });
-    describe('GET /articles/:article_id', () => {
+    describe('/articles/:article_id', () => {
       it('GET 200 responds with a single article object', () => {
         return request
           .get('/api/articles/5')
@@ -404,7 +422,13 @@ describe('NC news', () => {
         return request.get('/api/articles/99').expect(404);
       });
       it('GET 400 Bad Request - invalid article_id', () => {
-        return request.get('/api/articles/my-article').expect(400);
+        return request.get('/api/articles/article1').expect(400);
+      });
+      it('PUT /api/articles/:article_id 405 invalid method', () => {
+        return request
+          .put('/api/articles/1')
+          .send({ message: 'can I patch this?' })
+          .expect(405);
       });
       it('PATCH 200 updates votes for article and responds with updated article', () => {
         return request
@@ -455,7 +479,7 @@ describe('NC news', () => {
   });
 
   describe('/api/articles/:article_id/comments', () => {
-    describe('GET /', () => {
+    describe('/', () => {
       it('GET 200 responds with an array of comments for the given article_id', () => {
         return request
           .get('/api/articles/9/comments')
@@ -537,8 +561,6 @@ describe('NC news', () => {
             expect(comments[0].comment_id).to.equal(5);
           });
       });
-    });
-    describe('GET / WEIRD QUERIES', () => {
       it('?limit greater than number of comments - just brings back all comments', () => {
         return request
           .get('/api/articles/1/comments?limit=25')
@@ -576,6 +598,12 @@ describe('NC news', () => {
       it('404 not found if ?p asks for a nonexistent page', () => {
         return request.get('/api/articles/1/comments?p=22').expect(404);
       });
+      it('PATCH 405 invalid method', () => {
+        return request
+          .patch('/api/articles/1/comments')
+          .send({ message: 'can I patch this?' })
+          .expect(405);
+      });
     });
 
     describe('POST /', () => {
@@ -612,7 +640,7 @@ describe('NC news', () => {
           .expect(400);
       });
     });
-    describe('PATCH /:comment_id', () => {
+    describe('/:comment_id', () => {
       it('PATCH 200 updates votes and responds with the updated comment', () => {
         return request
           .patch('/api/articles/1/comments/7')
@@ -661,8 +689,6 @@ describe('NC news', () => {
           .send({ inc_votes: 1 })
           .expect(404);
       });
-    });
-    describe('DELETE /:comment_id', () => {
       it('DELETE 204 no content deletes the comment', () => {
         return request.delete('/api/articles/1/comments/8').expect(204);
       });
@@ -671,6 +697,9 @@ describe('NC news', () => {
       });
       it('DELETE 404 not found - existent comment, nonexistent article', () => {
         return request.delete('/api/articles/999/comments/7').expect(404);
+      });
+      it('GET 405 invalid method', () => {
+        return request.get('/api/articles/1/comments/8').expect(405);
       });
     });
   });

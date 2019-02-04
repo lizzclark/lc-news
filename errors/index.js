@@ -18,3 +18,7 @@ exports.invalidPathHandler = (req, res, next) => {
       'Invalid path - no such endpoint. GET /api for a list of valid endpoints and descriptions',
   });
 };
+
+exports.handle405 = (req, res, next) => {
+  res.status(405).send({ status: 405, message: 'method not allowed!' });
+};
