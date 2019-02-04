@@ -11,8 +11,7 @@ exports.up = function(connection, Promise) {
     articlesTable
       .string('username')
       .references('users.username')
-      .notNullable()
-      .onDelete('cascade');
+      .notNullable();
     articlesTable.timestamp('created_at', true).defaultTo(connection.fn.now());
   });
 };

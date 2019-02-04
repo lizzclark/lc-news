@@ -9,7 +9,7 @@ exports.up = function(connection, Promise) {
     commentsTable
       .foreign('article_id')
       .references('articles.article_id')
-      .onDelete('cascade');
+      .onDelete('CASCADE');
     commentsTable.integer('votes').defaultTo(0);
     commentsTable.text('body').notNullable();
     commentsTable.timestamp('created_at', true).defaultTo(connection.fn.now());

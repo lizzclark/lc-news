@@ -578,7 +578,7 @@ describe('NC news', () => {
       });
     });
 
-    describe.only('POST /', () => {
+    describe('POST /', () => {
       it('POST 201 responds with the posted comment', () => {
         return request
           .post('/api/articles/3/comments')
