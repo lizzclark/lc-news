@@ -21,9 +21,9 @@ Running the command `npm install` from the root directory of the project will in
 
 To run the tests, use the command `npm test`
 
-## Deployment
+## Deployed Version
 
-Add additional notes about how to deploy this on a live system
+The project is deployed here: https://lc-news.herokuapp.com/
 
 ## Built by
 
