@@ -99,7 +99,19 @@ describe('NC news', () => {
           });
       });
       it('GET /api/topics/:topic/articles 404 not found - nonexistent topic', () => {
-        return request.get('/api/topics/dogs/articles').expect(404);
+        return request.get('/api/topics/bad/articles').expect(404);
+      });
+      it('GET /api/topics/:topic/articles 200 new topic - responds with an empty array and total_count 0', () => {
+        return request
+          .post('/api/topics')
+          .send({ slug: 'dogs', description: 'our fluffy friends' })
+          .expect(201)
+          .then(res => {
+            return request
+              .get('/api/topics/dogs/articles')
+              .expect(200)
+              .then(response => expect(response.body.total_count).to.equal(0));
+          });
       });
       it('GET /api/topics/:topic/articles 200 responds with a total_count property giving the total number of articles', () => {
         return request
@@ -211,8 +223,13 @@ describe('NC news', () => {
             expect(articles[9].created_at.slice(0, 4)).to.equal('1978');
           });
       });
-      it('404 not found ?p - if asked for a nonexistent page', () => {
-        return request.get('/api/topics/mitch/articles?p=101').expect(404);
+      it('200 ?p - if asked for a nonexistent page, sends back total count and an empty array', () => {
+        return request
+          .get('/api/topics/mitch/articles?p=101')
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.eql([]);
+          });
       });
       it("?cats=fluffy - ignores queries that don't exist", () => {
         return request
@@ -230,7 +247,7 @@ describe('NC news', () => {
           .send({
             title: 'I like CATS',
             body: 'They are so cute and fluffy',
-            username: 'butter_bridge',
+            username: 'butter_bridge'
           })
           .expect(201)
           .then(({ body: { article } }) => {
@@ -250,7 +267,7 @@ describe('NC news', () => {
           .send({
             title: 'Dogs',
             body: 'They should have their own topic',
-            username: 'butter_bridge',
+            username: 'butter_bridge'
           })
           .expect(404);
       });
@@ -642,7 +659,7 @@ describe('NC news', () => {
           .send({
             body:
               "my mind's telling me no, but my body - my body is telling me yes",
-            username: 'butter_bridge',
+            username: 'butter_bridge'
           })
           .expect(400);
       });
@@ -746,7 +763,7 @@ describe('NC news', () => {
           .send({
             name: 'bilbo',
             username: 'fuzzysocks101',
-            avatar_url: 'www.avatars.com/55',
+            avatar_url: 'www.avatars.com/55'
           })
           .expect(201)
           .then(({ body: { user } }) => {
@@ -768,7 +785,7 @@ describe('NC news', () => {
             name: 'jonny',
             username: 'butter_bridge',
             avatar_url:
-              'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
+              'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
           })
           .expect(400);
       });

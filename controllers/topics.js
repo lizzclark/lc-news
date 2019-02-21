@@ -2,7 +2,7 @@ const {
   fetchTopics,
   addTopic,
   fetchArticlesByTopic,
-  addArticle,
+  addArticle
 } = require('../models/topics');
 
 const getTopics = function(req, res, next) {
@@ -19,20 +19,30 @@ const postTopic = function(req, res, next) {
     .catch(err => {
       next({
         status: 400,
-        message: 'could not add this topic',
+        message: 'could not add this topic'
       });
     });
 };
 
 const getArticlesByTopic = function(req, res, next) {
   fetchArticlesByTopic(req.params, req.query)
-    .then(([articles, countData]) => {
+    .then(([topic, articles, countData]) => {
+      // all good, we have articles
       if (articles.length !== 0) {
         const { total_count } = countData[0];
-        res.status(200).send({ total_count, articles });
-      } else {
-        return Promise.reject({ status: 404, message: 'articles not found' });
+        return res.status(200).send({ total_count, articles });
       }
+      // topic exists, but no articles for it
+      if (topic[0]) {
+        return res.status(200).send({ total_count: 0, articles });
+      }
+      // topic exists, there are articles, but pagination went too far back
+      if (countData[0]) {
+        const { total_count } = countData[0];
+        return res.status(200).send({ total_count, articles: [] });
+      }
+      // else
+      return Promise.reject({ status: 404, message: 'articles not found' });
     })
     .catch(next);
 };
@@ -46,7 +56,7 @@ const postArticleInTopic = function(req, res, next) {
       if (err.code === '23502') {
         return next({
           status: 400,
-          message: 'article not formatted correctly',
+          message: 'article not formatted correctly'
         });
       }
       if (err.code === '23503') {
@@ -59,5 +69,5 @@ module.exports = {
   getTopics,
   postTopic,
   getArticlesByTopic,
-  postArticleInTopic,
+  postArticleInTopic
 };

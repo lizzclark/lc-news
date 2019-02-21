@@ -32,7 +32,7 @@ exports.fetchArticlesByTopic = (
     'votes',
     'comment_count',
     'created_at',
-    'topic',
+    'topic'
   ];
   if (!validColumns.includes(sort_by)) sort_by = 'created_at';
 
@@ -41,6 +41,10 @@ exports.fetchArticlesByTopic = (
 
   // return articles and a total count of all the articles for this topic
   return Promise.all([
+    connection
+      .select('slug', 'description')
+      .from('topics')
+      .where({ slug: topic }),
     connection
       .select(
         { author: 'articles.username' },
@@ -62,7 +66,7 @@ exports.fetchArticlesByTopic = (
       .count('article_id as total_count')
       .from('articles')
       .groupBy('topic')
-      .where({ topic }),
+      .where({ topic })
   ]);
 };
 
