@@ -1,14 +1,14 @@
 module.exports = {
   extends: 'airbnb-base',
   env: {
-    mocha: true,
+    mocha: true
   },
   rules: {
     'no-unused-vars': [
       1,
       {
-        argsIgnorePattern: 'Promise|res|next|^err',
-      },
+        argsIgnorePattern: 'Promise|res|next|^err'
+      }
     ],
     camelcase: 0,
     'func-names': 0,
@@ -20,5 +20,6 @@ module.exports = {
     'comma-dangle': 0,
     'space-before-function-paren': 0,
     'arrow-body-style': 0,
-  },
+    'operator-linebreak': 0
+  }
 };

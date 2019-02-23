@@ -2,7 +2,7 @@ const {
   fetchUsers,
   addUser,
   fetchUserByUsername,
-  fetchArticlesByUser,
+  fetchArticlesByUser
 } = require('../models/users');
 
 exports.getUsers = (req, res, next) => {
@@ -14,12 +14,12 @@ exports.getUsers = (req, res, next) => {
 exports.postUser = (req, res, next) => {
   addUser(req.body)
     .then(([user]) => {
-      res.status(201).send({ user });
+      return res.status(201).send({ user });
     })
     .catch(err => {
-      next({
+      return next({
         status: 400,
-        message: 'invalid or duplicate user data',
+        message: 'invalid or duplicate user data'
       });
     });
 };
@@ -27,8 +27,8 @@ exports.postUser = (req, res, next) => {
 exports.getUserByUsername = ({ params: { username } }, res, next) => {
   fetchUserByUsername(username)
     .then(([user]) => {
-      if (user) res.status(200).send({ user });
-      else return Promise.reject({ status: 404, message: 'user not found' });
+      if (user) return res.status(200).send({ user });
+      return Promise.reject({ status: 404, message: 'user not found' });
     })
     .catch(next);
 };
@@ -38,8 +38,9 @@ exports.getArticlesByUser = ({ params: { username }, query }, res, next) => {
     .then(([articles, countData]) => {
       if (articles.length !== 0) {
         const [{ total_count }] = countData;
-        res.status(200).send({ total_count, articles });
-      } else return Promise.reject({ status: 404, message: 'not found' });
+        return res.status(200).send({ total_count, articles });
+      }
+      return Promise.reject({ status: 404, message: 'not found' });
     })
     .catch(next);
 };

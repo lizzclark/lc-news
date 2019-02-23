@@ -62,6 +62,7 @@ const postArticleInTopic = function(req, res, next) {
       if (err.code === '23503') {
         return next({ status: 404, message: 'no such topic' });
       }
+      return next(err);
     });
 };
 
