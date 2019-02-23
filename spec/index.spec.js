@@ -520,7 +520,15 @@ describe('NC news', () => {
             expect(comments[0].author).to.equal('butter_bridge');
           });
       });
-      it('GET 404 not found - nonexistent article_id or article with no comments', () => {
+      it('GET 200', () => {
+        return request
+          .get('/api/articles/2/comments')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments.length).to.equal(0);
+          });
+      });
+      it('GET 404 not found - nonexistent article_id', () => {
         return request.get('/api/articles/111/comments').expect(404);
       });
       it('GET 200 response is limited to 10 comments DEFAULT CASE', () => {
@@ -619,8 +627,13 @@ describe('NC news', () => {
             expect(comments[9].created_at.slice(0, 4)).to.equal('2007');
           });
       });
-      it('404 not found if ?p asks for a nonexistent page', () => {
-        return request.get('/api/articles/1/comments?p=22').expect(404);
+      it('200 empty array if ?p asks for a nonexistent page', () => {
+        return request
+          .get('/api/articles/1/comments?p=22')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments.length).to.equal(0);
+          });
       });
       it('PATCH 405 invalid method', () => {
         return request

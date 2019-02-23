@@ -23,17 +23,23 @@ exports.fetchComments = (
     'article_id',
     'votes',
     'created_at',
-    'body',
+    'body'
   ];
   if (!validColumns.includes(sort_by)) sort_by = 'created_at';
 
-  return connection
-    .select('comment_id', 'votes', 'created_at', 'username as author', 'body')
-    .from('comments')
-    .where({ article_id })
-    .limit(limit)
-    .orderBy(sort_by, order)
-    .offset(offset);
+  return Promise.all([
+    connection
+      .select('article_id')
+      .from('articles')
+      .where({ article_id }),
+    connection
+      .select('comment_id', 'votes', 'created_at', 'username as author', 'body')
+      .from('comments')
+      .where({ article_id })
+      .limit(limit)
+      .orderBy(sort_by, order)
+      .offset(offset)
+  ]);
 };
 
 exports.addComment = (comment, { article_id }) => {
@@ -45,7 +51,7 @@ exports.addComment = (comment, { article_id }) => {
   }
   return Promise.reject({
     status: 400,
-    message: 'invalid article_id, cannot POST comment',
+    message: 'invalid article_id, cannot POST comment'
   });
 };
 
@@ -66,7 +72,7 @@ exports.voteOnComment = ({ comment_id, article_id }, { inc_votes = 0 }) => {
   // invalid inc_votes value
   return Promise.reject({
     status: 400,
-    message: 'bad request, inc_votes must be a number',
+    message: 'bad request, inc_votes must be a number'
   });
 };
 

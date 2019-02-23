@@ -2,16 +2,14 @@ const {
   fetchComments,
   addComment,
   voteOnComment,
-  strikeComment,
+  strikeComment
 } = require('../models/comments');
 
 const getCommentsByArticle = function(req, res, next) {
   fetchComments(req.params, req.query)
-    .then(comments => {
-      if (comments.length !== 0) res.status(200).send({ comments });
-      else {
-        return Promise.reject({ status: 404, message: 'no comments found' });
-      }
+    .then(([article, comments]) => {
+      if (article.length !== 0) return res.status(200).send({ comments });
+      return Promise.reject({ status: 404, message: 'no comments found' });
     })
     .catch(next);
 };
@@ -25,7 +23,7 @@ const postComment = function(req, res, next) {
       if (err.code === '23503') {
         next({
           status: 404,
-          message: "can't add comment to nonexistent article",
+          message: "can't add comment to nonexistent article"
         });
       }
       if (err.code === '42703') {
@@ -38,20 +36,18 @@ const postComment = function(req, res, next) {
 const patchComment = function(req, res, next) {
   voteOnComment(req.params, req.body)
     .then(([comment]) => {
-      if (comment) res.status(200).send({ comment });
-      else {
-        // no such comment - knex responds with an empty array
-        return Promise.reject({
-          status: 404,
-          message: 'no such comment to patch',
-        });
-      }
+      if (comment) return res.status(200).send({ comment });
+      // no such comment - knex responds with an empty array
+      return Promise.reject({
+        status: 404,
+        message: 'no such comment to patch'
+      });
     })
     .catch(err => {
       if (err.code === '22P02') {
         next({
           status: 400,
-          message: 'comment_id and/or article_id not found',
+          message: 'comment_id and/or article_id not found'
         });
       }
       next(err);
@@ -61,13 +57,11 @@ const patchComment = function(req, res, next) {
 const deleteComment = function(req, res, next) {
   strikeComment(req.params)
     .then(rowDeleted => {
-      if (rowDeleted) res.status(204).send();
-      else {
-        return Promise.reject({
-          status: 404,
-          message: 'no such comment to delete',
-        });
-      }
+      if (rowDeleted) return res.status(204).send();
+      return Promise.reject({
+        status: 404,
+        message: 'no such comment to delete'
+      });
     })
     .catch(next);
 };
@@ -76,5 +70,5 @@ module.exports = {
   getCommentsByArticle,
   postComment,
   patchComment,
-  deleteComment,
+  deleteComment
 };
