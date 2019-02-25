@@ -1,5 +1,5 @@
 {
-  "name": "LC News",
+  "name": "LC-News",
   "version": "1.0.0",
   "description": "## RESTful News API",
   "main": "index.js",
