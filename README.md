@@ -1,37 +1,36 @@
 # LC News
 
-A news API.
+A RESTful news API.
 
 ## Getting Started
 
-<!-- These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system. -->
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-
 ### Prerequisites
 
-Node.js
-PSQL
+- Node.js
+- PostgreSQL
 
-### Installing
+### To run the project locally:
 
-Running the command `npm install` from the root directory of the project will install all the necessary dependencies.
+- Clone the repo and run the command `npm install`. This will install all the necessary dependencies.
+- See `package.json` for a list of other commands available, including database migrations and seeding, development mode, and testing.
 
 ## Running the tests
 
-To run the tests, use the command `npm test`
+To run the tests, use the command `npm test`. This will set up a test database on your machine and run the `spec` folder using test data.
 
-## Deployed Version
+## Deployed Version and Links
 
-The project is deployed here: https://lc-news.herokuapp.com/
+View a deployed version of the API here: https://lc-news.herokuapp.com/api
+
+LC News also has a responsive frontend built with ReactJS.
+
+Frontend on Github: https://github.com/lizzclark/lc-news-frontend
+
+Frontend deployed version: https://lc-news.netlify.com
 
 ## Built by
 
 Lizz Clark - github.com/lizzclark
-
-## License
-
-?
 
 ## Acknowledgments
 
