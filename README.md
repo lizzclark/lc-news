@@ -1,6 +1,17 @@
 # LC News
 
-A RESTful news API.
+A RESTful news API. Read articles, browse topics, comment and vote on the latest news!
+
+Available actions include:
+
+- Topics: get all topics, add a topic
+- Articles: post an article in a topic, get all articles for a topic, get all articles
+- Single article: get, vote on, or delete an article
+- Comments: get all comments for an article; post, vote on or delete a comment
+- Users: get all users, add a user
+- All endpoints that serve articles or comments are queriable, allowing chages to sort order, sort criterion, and pagination
+
+See https://lc-news.herokuapp.com/api for a detailed list of endpoints and how to interact with them.
 
 ## Getting Started
 
