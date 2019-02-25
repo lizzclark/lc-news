@@ -1,7 +1,7 @@
 {
-  "name": "BE2-NC-Knews",
+  "name": "LC News",
   "version": "1.0.0",
-  "description": "## Northcoders News API",
+  "description": "## RESTful News API",
   "main": "index.js",
   "scripts": {
     "test": "psql -f db/setup_test.sql && mocha spec",
@@ -21,15 +21,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/northcoders/BE2-NC-Knews.git"
+    "url": "git+https://github.com/lizzclark/lc-news.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/northcoders/BE2-NC-Knews/issues"
+    "url": "https://github.com/lizzclark/lc-news/issues"
   },
-  "homepage": "https://github.com/northcoders/BE2-NC-Knews#readme",
+  "homepage": "https://github.com/lizzclark/lc-news#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
